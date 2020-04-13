@@ -23,7 +23,7 @@ const useStyles = makeStyles((theme) => ({
   },
   avatar: {
     margin: theme.spacing(1),
-    backgroundColor: theme.palette.secondary.main,
+    backgroundColor: theme.palette.primary.dark,
   },
   form: {
     width: "100%",
@@ -40,11 +40,11 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-export default function SignIn() {
+export default () => {
   const classes = useStyles();
 
   return (
-    <Container component="main" maxWidth="xs"   >
+    <Container maxWidth="xs"   >
       <CssBaseline />
       <div className={classes.paper}>
         <Avatar className={classes.avatar}>
@@ -97,7 +97,7 @@ export default function SignIn() {
               </NextLink>
             </Grid>
             <Grid item>
-              <NextLink href="#">
+              <NextLink href="/register">
                 <Link color="inherit" className={classes.link} variant="body2">
                     Don't have an account? Sign Up
                 </Link>

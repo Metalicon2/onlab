@@ -10,7 +10,8 @@ const useStyle = makeStyles(() => ({
     display: "flex",
     minHeight: "100vh",
     flexDirection: "column",
-    flexWrap: "wrap"
+    flexWrap: "wrap",
+    padding: 0
   },
 }));
 
@@ -32,9 +33,9 @@ const App = ({ Component, pageProps }) => {
         />
       </Head>
       <CssBaseline />
-      <Container maxWidth="lg" className={useStyle().root}>
+      <Container maxWidth="maxWidth" className={useStyle().root}>
         <Header />
-        <div style={{display: "flex", flexGrow: 1}}>
+        <div style={{display: "flex", flexGrow: 1, backgroundColor: "#E8E8E8"}}>
             <Component {...pageProps}/>
         </div>
         <Footer />
