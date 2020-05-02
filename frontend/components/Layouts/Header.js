@@ -11,6 +11,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import PersonIcon from "@material-ui/icons/Person";
 import Link from "next/link";
 import ShoppingCartIcon from "@material-ui/icons/ShoppingCart";
+import TabSelector from '../Layouts/TabSelector';
 
 const useStyles = makeStyles((theme) => ({
   title: {
@@ -32,11 +33,7 @@ const Header = () => {
             Foodster
           </Typography>
         </Link>
-        <Tabs className={classes.tabs} variant="fullWidth" color="inherit">
-          <Tab label="Soup" />
-          <Tab label="Dishes" />
-          <Tab label="Desserts" />
-        </Tabs>
+        <TabSelector />
         <Link href="/cart">
           <IconButton color="inherit">
             <ShoppingCartIcon />
