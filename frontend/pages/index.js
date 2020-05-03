@@ -3,8 +3,8 @@ import { Container } from "@material-ui/core";
 
 const Home = () => {
   return (
-    <Container style={{display: "flex"}}>
-      <Carousel/>
+    <Container style={{display: "flex", position: "relative", height: '100%'}}>
+      <Carousel />
     </Container>
   );
 };

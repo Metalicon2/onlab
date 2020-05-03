@@ -42,7 +42,7 @@ const App = ({ Component, pageProps }) => {
           }}
         >
           <Component {...pageProps} />
-        </div>
+          </div>
         <Footer style={{ flex: 1 }} />
       </Container>
     </>

@@ -16,7 +16,7 @@ import MoreVertIcon from '@material-ui/icons/MoreVert';
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    maxWidth: 225,
+    width: "200px",
     margin: 10,
   },
   media: {
@@ -60,7 +60,6 @@ const CardItem = ({name, desc}) => {
           </IconButton>
         }
         title={name}
-        subheader="September 14, 2016"
       />
       <CardMedia
         className={classes.media}
