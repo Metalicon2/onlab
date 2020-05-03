@@ -3,15 +3,13 @@ import Container from "@material-ui/core/Container";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import { makeStyles } from "@material-ui/core/styles";
 import { Header, Footer } from "../components/Layouts";
+import "react-awesome-slider/dist/styles.css";
 
 const useStyle = makeStyles(() => ({
   root: {
-    position: "relative",
     display: "flex",
-    minHeight: "100vh",
     flexDirection: "column",
-    flexWrap: "wrap",
-    padding: 0
+    height: "100vh",
   },
 }));
 
@@ -34,11 +32,18 @@ const App = ({ Component, pageProps }) => {
       </Head>
       <CssBaseline />
       <Container maxWidth="lg" className={useStyle().root}>
-        <Header />
-        <div style={{display: "flex", flexGrow: 1, backgroundColor: "#E8E8E8"}}>
-            <Component {...pageProps}/>
+        <Header style={{ flex: 1 }} />
+        <div
+          style={{
+            flex: 1,
+            display: "flex",
+            backgroundColor: "#E8E8E8",
+            alignItems: "flex-start",
+          }}
+        >
+          <Component {...pageProps} />
         </div>
-        <Footer />
+        <Footer style={{ flex: 1 }} />
       </Container>
     </>
   );

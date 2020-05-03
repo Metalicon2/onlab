@@ -10,8 +10,11 @@
   "dependencies": {
     "@material-ui/core": "^4.9.10",
     "@material-ui/icons": "^4.9.1",
+    "material-table": "^1.57.2",
     "next": "9.3.4",
     "react": "16.13.1",
-    "react-dom": "16.13.1"
+    "react-awesome-slider": "^4.1.0",
+    "react-dom": "16.13.1",
+    "react-material-ui-carousel": "^1.4.3"
   }
 }
