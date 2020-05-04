@@ -1,97 +1,33 @@
 import Card from "./Card";
-import Tabs from "@material-ui/core/Tabs";
-import Tab from "@material-ui/core/Tab";
-import Favorite from "@material-ui/icons/Favorite";
-import FavoriteBorder from "@material-ui/icons/FavoriteBorder";
-import {
-  Container,
-  Grid,
-  Slider,
-  Typography,
-  TextField,
-  FormControlLabel,
-  Checkbox,
-  Switch,
-  Paper,
-} from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
+import { Container, TextField, Paper } from "@material-ui/core";
+import TabBar from "../Filter/TabBar";
+import RangeSlider from "../Filter/SliderBar";
+import SwitchBar from "../Filter/SwitchBar";
 
 const CardList = ({ data }) => {
-  const [value, setValue] = React.useState(0);
-
-  const handleChange = (event, newValue) => {
-    setValue(newValue);
-  };
-
-  const useStyles = makeStyles((theme) => ({
-    root: {
-      width: 200,
-      margin: "auto",
-      userSelect: "none",
-      flex: 1
-    },
-    tabRoot: {
-      flex: 1,
-      backgroundColor: theme.palette.background.paper,
-      height: 200,
-    },
-    tabs: {
-      borderRight: `1px solid ${theme.palette.divider}`,
-    },
-  }));
-
   return (
     <>
-      <div style={{ flex: 1, margin: "10px" }}>
-        <div style={{ display: "flex", flexDirection: "column" }}>
-          <div className={useStyles().tabRoot}>
-            <Paper>
-            <Tabs
-              
-              orientation="vertical"
-              variant="scrollable"
-              value={value}
-              onChange={handleChange}
-              aria-label="Vertical tabs example"
-            >
-              <Tab label="Item One" />
-              <Tab label="Item Two" />
-              <Tab label="Item Three" />
-              <Tab label="Item Four" />
-              <Tab label="Item Five" />
-            </Tabs>
-            </Paper>
-          </div>
-          <Paper>
-          <div style={{marginTop: "10px"}} className={useStyles().root}>
-            <Typography id="range-slider" gutterBottom>
-              Price range
-            </Typography>
-            <Slider valueLabelDisplay="auto" aria-labelledby="range-slider" />
-          </div>
-          <form className={useStyles().root} noValidate autoComplete="off">
+      <div style={{ flex: 1, height: "100%", padding: "10px" }}>
+        <Paper style={{ height: "100%", padding: "10px 0" }}>
+          <TabBar />
+          <Container style={{ userSelect: "none" }}>
+            <div style={{ marginTop: "10px" }}>
+              <RangeSlider />
+            </div>
             <TextField id="standard-basic" label="Search" />
-          </form>
-          <div style={{ marginTop: "10px" }} className={useStyles().root}>
-            <FormControlLabel control={<Switch />} label="Corona free" />
-            <FormControlLabel
-              control={<Switch color="primary" />}
-              label="Vegetarian"
-            />
-            <FormControlLabel
-              control={<Switch color="primary" />}
-              label="Spicy"
-            />
-          </div>
-          </Paper>
-        </div>
+            <div style={{ marginTop: "10px" }}>
+              <SwitchBar />
+            </div>
+          </Container>
+        </Paper>
       </div>
-      <div style={{ flex: 4 }}>
+      <div style={{ flex: 4, height: "805px", overflowY: "auto" }}>
         <div
           style={{
             display: "flex",
             flexFlow: "row wrap",
             justifyContent: "flex-start",
+            height: "100%",
           }}
         >
           {data.map((item, index) => (

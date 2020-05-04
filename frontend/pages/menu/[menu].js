@@ -56,6 +56,26 @@ const desserts = [
     name: "5",
     desc: "5",
   },
+  {
+    name: "6",
+    desc: "6",
+  },
+  {
+    name: "7",
+    desc: "7",
+  },
+  {
+    name: "8",
+    desc: "8",
+  },
+  {
+    name: "9",
+    desc: "9",
+  },
+  {
+    name: "10",
+    desc: "10",
+  },
 ];
 
 const useStyle = makeStyles(() => ({
