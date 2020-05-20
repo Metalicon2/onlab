@@ -7,10 +7,19 @@ module.exports = (sequelize, DataTypes) => {
             primaryKey: true,
             unique: true,
           },
-          user_id: {
-            type: DataTypes.INTEGER,
-            allowNull: false,
-          },
     });
+
+    Order.associate = models => {
+      Order.belongsTo(models.User, {
+        foreignKey: {
+          allowNull: false
+        }
+      })
+    }
+
+    Order.associate = models => {
+      Order.hasMany(models.OrderItem);
+    }
+
     return Order;
 }
