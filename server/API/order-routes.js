@@ -1,17 +1,6 @@
 const router = require("koa-router")();
 const db = require("../models");
 
-/*
-[
-    {
-        foodid, 
-        userid,
-        quantity
-    }
-]
-
-*/
-
 router.post("/order/new", async (ctx) => {
     console.log(ctx.request.body.userid);
     const Order = await db.Order.create({
@@ -34,14 +23,16 @@ router.get("/order/all", async (ctx) => {
         include: [db.OrderItem]
     });
     if(Orders.length){
-        ctx.response.body = await db.OrderItem.findAll();
+        ctx.response.body = Orders;
     }else{
         ctx.response.body = "no orders found!";
     }
 });
 
 router.get("/orderitem/all", async ctx => {
-    const res = await db.OrderItem.findAll().catch(err => console.log(err));
+    const res = await db.OrderItem.findAll({
+        include: [db.Food]
+    }).catch(err => console.log(err));
     ctx.response.body = res;
 });
 
