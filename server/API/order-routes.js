@@ -9,10 +9,14 @@ router.post("/order/new", async (ctx) => {
     if(Order.id){
         const OrderItem = await db.OrderItem.create({
             quantity: ctx.request.body.quantity,
-            food_id: ctx.request.body.food_id,
+            food_id: ctx.request.body.foodid,
             order_id: Order.id
-        });
-        ctx.response.body = "Created new order!";
+        }).catch(err => console.log(err));
+        if(OrderItem.id){
+            ctx.response.body = "Created new order!";
+        }else{
+            ctx.response.body = "Failed to create new order!";
+        }
     }else{
         ctx.response.body = "Cannot make new order!";
     }

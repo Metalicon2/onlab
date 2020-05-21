@@ -1,0 +1,64 @@
+{
+    "foods": [
+        {
+            "id": "1",
+            "price": "1000",
+            "name": "Pizza Margherita",
+            "description": "This is a pizza",
+            "subCategory": "pizza",
+            "mainCategory": "maindish",
+            "createdAt": "2020-05-21",
+            "updatedAt": "2020-05-21"
+        },
+        {
+            "id": "2",
+            "price": "2000",
+            "name": "Calslaw",
+            "description": "This is a salad",
+            "subCategory": "salad",
+            "mainCategory": "maindish",
+            "createdAt": "2020-05-21",
+            "updatedAt": "2020-05-21"
+        },
+        {
+            "id": "3",
+            "price": "3000",
+            "name": "Frankfurti Soup",
+            "description": "This is a soup",
+            "subCategory": "soup",
+            "mainCategory": "appetizer",
+            "createdAt": "2020-05-22",
+            "updatedAt": "2020-05-22"
+        },
+        {
+            "id": "4",
+            "price": "1400",
+            "name": "Cream Soup",
+            "description": "This is a soup",
+            "subCategory": "soup",
+            "mainCategory": "appetizer",
+            "createdAt": "2020-05-22",
+            "updatedAt": "2020-05-22"
+        },
+        {
+            "id": "5",
+            "price": "1400",
+            "name": "Varga béles",
+            "description": "This is a dessert",
+            "subCategory": "cake",
+            "mainCategory": "dessert",
+            "createdAt": "2020-05-22",
+            "updatedAt": "2020-05-22"
+        },
+        {
+            "id": "6",
+            "price": "1800",
+            "name": "Krémes",
+            "description": "This is a dessert",
+            "subCategory": "cake",
+            "mainCategory": "dessert",
+            "createdAt": "2020-05-22",
+            "updatedAt": "2020-05-22"
+        }
+    ]
+}

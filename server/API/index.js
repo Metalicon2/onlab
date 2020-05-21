@@ -1,6 +1,4 @@
 const router = require("koa-router")();
-const db = require("../models");
-const bcrypt = require("bcrypt");
 
 router.get("/", ctx => {
     ctx.body = "Hello Home!";    
