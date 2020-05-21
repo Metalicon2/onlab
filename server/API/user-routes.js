@@ -5,7 +5,7 @@ const db = require("../models");
 router.post("/user/register", async (ctx) => {
     const res = await db.User.create({
       email: ctx.request.body.email,
-      password_hash:await bcrypt.hash(ctx.request.body.password, 10),
+      password_hash: await bcrypt.hash(ctx.request.body.password, 10),
       address: ctx.request.body.address,
       phone: ctx.request.body.phone,
     }).catch(err => console.log(err));

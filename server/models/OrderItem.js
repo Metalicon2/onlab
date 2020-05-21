@@ -7,15 +7,18 @@ module.exports = (sequelize, DataTypes) => {
             unique: true,
             primaryKey: true,
         },
-        order_id: {
-            type: DataTypes.INTEGER,
-            allowNull: false
-        },
-        food_id: {
-            type: DataTypes.INTEGER,
-            allowNull: false
-        },
         quantity: DataTypes.INTEGER(20)
     });
+
+    OrderItem.associate = models => {
+        OrderItem.belongsTo(models.Order);
+        OrderItem.belongsTo(models.Food, {
+            foreignKey: {
+            name: "food_id",
+            allowNull: false
+            }
+        });
+    }
+
     return OrderItem;
 }

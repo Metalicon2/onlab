@@ -8,8 +8,10 @@ router.get("/", ctx => {
 
 const users = require("./user-routes");
 const orders = require("./order-routes");
+const foods = require("./food-routes");
 
 router.use(users.routes()).use(users.allowedMethods());
 router.use(orders.routes()).use(orders.allowedMethods());
+router.use(foods.routes()).use(foods.allowedMethods());
 
 module.exports = router;

@@ -17,7 +17,15 @@ module.exports = (sequelize, DataTypes) => {
             unique: true
         },
         mainCategory: DataTypes.STRING(30),
-        subCategory: DataTypes.STRING(30)
+        subCategory: DataTypes.STRING(30),
+        description: {
+            type: DataTypes.STRING(100)
+        }
     });
+
+    Food.associate = models => {
+        Food.hasOne(models.OrderItem);
+    }
+
     return Food;
 }
