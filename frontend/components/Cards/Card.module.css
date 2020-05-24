@@ -12,7 +12,7 @@
 
 @keyframes createBox {
     from {
-      transform: scale(0);
+      transform: scale(0.75);
     }
     to {
       transform: scale(1);

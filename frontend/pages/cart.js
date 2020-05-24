@@ -1,34 +1,29 @@
 import MaterialTable from "material-table";
-import { useState, useContext, useEffect } from "react";
-import { Context } from "../Context";
+import { useState } from "react";
 import Button from '@material-ui/core/Button';
+import { connect } from "react-redux";
+import { deleteFromCartAction, updateCartAction } from "../redux/actions";
 
-const Cart = () => {
-
-  const {cart, removeCart, updateCart, user} = useContext(Context);
+const Cart = ({user, cart, deleteFromCartAction, updateCartAction}) => {
 
   const [state, setState] = useState({
     columns: [
-      {field: 'url',
+      {
+        field: 'url',
         title: 'Icon',
         editable: "never",
-        render: rowData => <img src="/static/images/pizza1.jpg" style={{width: 50, borderRadius: '75%'}}/>},
-      { title: "Food", field: "name", editable: "never"},
-      { title: "Quantity", field: "quantity"},
-      { title: "Price", field: "price", editable: "never"},
+        render: rowData => <img src={rowData.src} style={{ width: 50, height: 50, borderRadius: '10%' }} />
+      },
+      { title: "Food", field: "name", editable: "never" },
+      { title: "Quantity", field: "quantity" },
+      { title: "Price", field: "price", editable: "never" },
       { title: "Date", field: "date", type: "date" },
     ],
     data: [...cart],
   });
 
-  useEffect(() => {
-    const data = JSON.parse(localStorage.getItem("cart")) || [];
-    console.log(data);
-    setState(prevState => {return {...prevState, data}});
-  }, []);
-
   return (
-    <div style={{ display: "flex", flexDirection: "column", flex: 1, height: "800px", overflowY: "auto"}}>
+    <div style={{ display: "flex", flexDirection: "column", flex: 1, height: "800px", overflowY: "auto" }}>
       <MaterialTable
         title="Cart"
         columns={state.columns}
@@ -41,14 +36,17 @@ const Cart = () => {
                 if (oldData) {
                   setState((prevState) => {
                     const data = [...prevState.data];
-                    if(newData.date < oldData.date){
+                    if (newData.date <= oldData.date) {
+                      window.alert("You cannot set older date than today!");
                       return { ...prevState, data };
-                    }else{
-                      updateCart(oldData, newData);
+                    } else {
                       data[data.indexOf(oldData)] = newData;
                       return { ...prevState, data };
                     }
                   });
+                  if(newData.date >= oldData.date){
+                    updateCartAction(oldData, newData)
+                  }
                 }
               }, 600);
             }),
@@ -59,9 +57,10 @@ const Cart = () => {
                 setState((prevState) => {
                   const data = [...prevState.data];
                   data.splice(data.indexOf(oldData), 1);
-                  removeCart(oldData);
+                  console.log("render");
                   return { ...prevState, data };
                 });
+                deleteFromCartAction(oldData);
               }, 600);
             }),
         }}
@@ -72,14 +71,26 @@ const Cart = () => {
         }}
       />
       {
-      user.email && <div style={{flex: 1, display: "flex", alignItems: "flex-start"}}>
-        <Button style={{flex: 1}} variant="contained" color="primary">
-          Order
+        user.email && <div style={{ flex: 1, display: "flex", alignItems: "flex-start" }}>
+          <Button style={{ flex: 1 }} variant="contained" color="primary">
+            Order
         </Button>
-      </div>
-      }   
+        </div>
+      }
     </div>
   );
 };
 
-export default Cart;
+const mapStateToProps = (state) => {
+  return {
+    user: state.user,
+    cart: state.cart
+  }
+}
+
+const mapDispatchToProps = {
+  deleteFromCartAction: deleteFromCartAction,
+  updateCartAction: updateCartAction
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Cart);

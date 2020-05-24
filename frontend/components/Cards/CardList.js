@@ -1,28 +1,23 @@
 import Card from "./Card";
-import { Container, TextField, Paper } from "@material-ui/core";
+import { Container, Paper } from "@material-ui/core";
 import TabBar from "../Filter/TabBar";
 import RangeSlider from "../Filter/SliderBar";
 import SwitchBar from "../Filter/SwitchBar";
-import { useMemo } from "react";
+import { connect } from "react-redux";
+import SearchField from "../Filter/SearchField";
 
-const CardList = React.memo(({ data, subCategoryList, maxPrice, setSubCategory, tabValue,
-  handleTabChange, sliderValue, setSliderValue, handleSearchChange, handleSwitchChange, checkedVega, checkedSpicy }) => {
-
-  const switchcomp = useMemo(() => <SwitchBar handleSwitch={handleSwitchChange} checkedVega={checkedVega} checkedSpicy={checkedSpicy}/>, 
-                                      [handleSwitchChange, checkedVega, checkedSpicy]);
-  const sliderComp = useMemo(() => <div style={{ marginTop: "10px" }}>{console.log("render")}<RangeSlider maxPrice={maxPrice} value={sliderValue} handleChange={setSliderValue}/></div>
-  , [sliderValue, maxPrice, setSliderValue])
+const CardList = ({ foodList, filteredFoodList, isFiltered }) => {
 
   return (
     <>
       <div style={{ flex: 1, height: "100%", padding: "10px" }}>
         <Paper style={{ height: "100%", padding: "10px 0" }}>
-          <TabBar subCategoryList={subCategoryList} setSubCategory={setSubCategory} tabValue={tabValue} handleChange={handleTabChange}/>
+          <TabBar />
           <Container style={{ userSelect: "none" }}>
-            {sliderComp}
-            <TextField id="standard-basic" label="Search" onChange={(e) => handleSearchChange(e.target.value)}/>
+            <div style={{ marginTop: "10px" }}><RangeSlider /></div>
+            <SearchField />
             <div style={{ marginTop: "10px" }}>
-              {switchcomp}
+              <SwitchBar />
             </div>
           </Container>
         </Paper>
@@ -36,13 +31,28 @@ const CardList = React.memo(({ data, subCategoryList, maxPrice, setSubCategory, 
             height: "100%",
           }}
         >
-          {data.map((item, index) => (
-            <Card name={item.name} desc={item.description} price={item.price} key={index} key={index} color={item.color} src={item.src}/>
-          ))}
+          {
+            isFiltered && filteredFoodList.map((item, index) => (
+              <Card name={item.name} desc={item.description} price={item.price} key={index} key={index} color={item.color} src={item.src} />
+            ))
+          }
+          {
+            !isFiltered && foodList.map((item, index) => (
+              <Card name={item.name} desc={item.description} price={item.price} key={index} key={index} color={item.color} src={item.src} />
+            ))
+          }
         </div>
       </div>
     </>
   );
-});
+};
 
-export default CardList;
+const mapStateToProps = (state) => {
+  return {
+    foodList: state.foodList,
+    filteredFoodList: state.filteredFoodList,
+    isFiltered: state.isFiltered
+  }
+}
+
+export default connect(mapStateToProps, null)(CardList);

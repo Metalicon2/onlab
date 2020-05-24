@@ -12,8 +12,7 @@ import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
 import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
-import { useContext, useState } from "react";
-import { Context } from "../Context";
+import { useState } from "react";
 import API from "../utils/API";
 import router from "next/router";
 import {addUserAction} from "../redux/actions";
@@ -48,7 +47,6 @@ const useStyles = makeStyles((theme) => ({
 
 const Login = ({addUserAction}) => {
   const classes = useStyles();
-  const { setUser } = useContext(Context);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
@@ -61,7 +59,6 @@ const Login = ({addUserAction}) => {
     const res = await API.post("/user/login", user).catch(err => console.log(err));
     if(res.data.status == 200){
       addUserAction(user);
-      setUser(user);
       router.push("/");
       window.alert("logged in!");
     }else if(res.data.status == 400){
@@ -147,8 +144,6 @@ const Login = ({addUserAction}) => {
     </Container>
   );
 }
-
-Login.getInitialProps = ({store}) => {}
 
 const mapDispatchToProps = {
   addUserAction: addUserAction

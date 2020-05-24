@@ -1,19 +1,65 @@
 import { FormControlLabel, Switch } from "@material-ui/core";
+import { connect } from "react-redux";
+import {setCheckedVegaAction, setCheckedSpicyAction, setIsFilteredAction, setFilteredFoodListAction} from "../../redux/actions";
 
-const SwitchBar = ({handleSwitch, checkedVega, checkedSpicy}) => {
+const SwitchBar = ({vegaChecked, spicyChecked, foodList, setCheckedVegaAction, setCheckedSpicyAction, setIsFilteredAction, setFilteredFoodListAction}) => {
+
+  const handleSwitch = (switchName) => {
+    let tempVega = vegaChecked;
+    let tempSpicy = spicyChecked;
+    if (switchName === "vega") {
+      tempVega = !vegaChecked;
+      setCheckedVegaAction(tempVega);
+    } else if (switchName === "spicy") {
+      tempSpicy = !spicyChecked;
+      setCheckedSpicyAction(tempSpicy);
+    }
+    if (tempVega && tempSpicy) {
+      setIsFilteredAction(true);
+      setFilteredFoodListAction(foodList.filter(item => item.spicy === tempSpicy && item.vegetarian === tempVega));
+      console.log("both");
+    } else if (tempVega) {
+      setIsFilteredAction(true);
+      setFilteredFoodListAction(foodList.filter(item => item.vegetarian === tempVega));
+      console.log("vega");
+    }
+    else if (tempSpicy) {
+      setIsFilteredAction(true);
+      setFilteredFoodListAction(foodList.filter(item => item.spicy === tempSpicy));
+      console.log("spicy");
+    }
+    else {
+      setIsFilteredAction(false);
+    }
+  }
 
   return (
     <>
       <FormControlLabel control={<Switch color="primary"/>} label="Price (L -> H)" />
       <FormControlLabel control={<Switch color="primary"/>} label="Price (H -> L)" />
       <FormControlLabel
-        control={<Switch color="primary" checked={checkedVega} onChange={() => {handleSwitch("vega");}}/>}
+        control={<Switch color="primary" checked={vegaChecked} onChange={() => handleSwitch("vega")}/>}
         label="Vegetarian"
       />
-      <FormControlLabel control={<Switch color="primary" checked={checkedSpicy} onChange={() => {handleSwitch("spicy");}}/>} 
+      <FormControlLabel control={<Switch color="primary" checked={spicyChecked} onChange={() => handleSwitch("spicy")}/>} 
       label="Spicy" />
     </>
   );
 };
 
-export default SwitchBar;
+const mapStateToProps = (state) => {
+  return {
+    vegaChecked: state.vegaChecked,
+    spicyChecked: state.spicyChecked,
+    foodList: state.foodList
+  }
+}
+
+const mapDispatchToProps = {
+  setCheckedVegaAction: setCheckedVegaAction,
+  setCheckedSpicyAction: setCheckedSpicyAction,
+  setIsFilteredAction: setIsFilteredAction,
+  setFilteredFoodListAction, setFilteredFoodListAction
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(SwitchBar);

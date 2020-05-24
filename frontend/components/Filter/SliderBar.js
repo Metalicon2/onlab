@@ -1,11 +1,23 @@
 import React from 'react';
 import Typography from '@material-ui/core/Typography';
 import Slider from '@material-ui/core/Slider';
+import { connect } from "react-redux";
+import { setSliderValueAction, setIsFilteredAction, setFilteredFoodListAction } from "../../redux/actions";
 
-const RangeSlider = ({maxPrice, value, handleChange}) => {
-  function valuetext(value)  {
+const RangeSlider = ({ maxPrice, sliderValue, setSliderValueAction, setIsFilteredAction, setFilteredFoodListAction, foodList}) => {
+  function valuetext(value) {
     return `${value} Ft`;
   }
+
+  const handleSliderChange = (event, newValue) => {
+    setSliderValueAction(newValue);
+    if (newValue[1] * maxPrice / 100 < maxPrice || newValue[0] > 0) {
+      setIsFilteredAction(true);
+      setFilteredFoodListAction(foodList.filter(item => item.price >= newValue[0] * maxPrice / 100 && item.price <= newValue[1] * maxPrice / 100));
+    } else {
+      setIsFilteredAction(false);
+    }
+  };
 
   const marks = [
     {
@@ -24,17 +36,31 @@ const RangeSlider = ({maxPrice, value, handleChange}) => {
         Price Range
       </Typography>
       <Slider
-        value={value}
-        onChange={handleChange}
+        value={sliderValue}
+        onChange={handleSliderChange}
         valueLabelDisplay="auto"
         aria-labelledby="range-slider"
         getAriaValueText={valuetext}
         marks={marks}
-        scale={(x) => Math.round(maxPrice/100 * x)}
-        step={maxPrice/(maxPrice/100)/(maxPrice/100)}
+        scale={(x) => Math.round(maxPrice / 100 * x)}
+        step={maxPrice / (maxPrice / 100) / (maxPrice / 100)}
       />
     </div>
   );
 }
 
-export default RangeSlider;
+const mapStateToProps = (state) => {
+  return {
+    maxPrice: state.maxPrice,
+    sliderValue: state.sliderValue,
+    foodList: state.foodList
+  }
+}
+
+const mapDispatchToProps = {
+  setSliderValueAction: setSliderValueAction,
+  setIsFilteredAction: setIsFilteredAction, 
+  setFilteredFoodListAction: setFilteredFoodListAction
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(RangeSlider);

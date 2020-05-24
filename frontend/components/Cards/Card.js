@@ -9,8 +9,8 @@ import Typography from '@material-ui/core/Typography';
 import { red } from '@material-ui/core/colors';
 import AddShoppingCartIcon from '@material-ui/icons/AddShoppingCart';
 import styles from "./Card.module.css";
-import { useContext } from 'react';
-import { Context } from '../../Context';
+import { connect } from "react-redux";
+import { addToCartAction } from "../../redux/actions";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -33,11 +33,16 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const CardItem = ({ name, desc, price, color, src}) => {
+const CardItem = ({ name, desc, price, color, src, addToCartAction}) => {
 
   const classes = useStyles();
 
-  const { addCart } = useContext(Context);
+  const addCart = (item) => {
+    const res = window.confirm("Are you sure?");
+    if(res) {
+      addToCartAction(item);
+    }
+  }
 
   return (
     <div className={styles.grow}>
@@ -64,7 +69,7 @@ const CardItem = ({ name, desc, price, color, src}) => {
       <p style={{marginLeft: "10px"}}>{price} Ft</p>
         <IconButton
           className={classes.expand}
-          onClick={() => addCart({name: name, price: price, date: new Date(), quantity: 1})}
+          onClick={() => addCart({name: name, price: price, date: new Date(), quantity: 1, src: src})}
         >
           <AddShoppingCartIcon />
         </IconButton>
@@ -73,4 +78,8 @@ const CardItem = ({ name, desc, price, color, src}) => {
   );
 }
 
-export default CardItem;
+const mapDipatchToProps = {
+  addToCartAction: addToCartAction
+}
+
+export default connect(null, mapDipatchToProps)(CardItem);

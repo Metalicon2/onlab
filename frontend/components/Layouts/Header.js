@@ -11,9 +11,10 @@ import Link from "next/link";
 import ShoppingCartIcon from "@material-ui/icons/ShoppingCart";
 import TabSelector from '../Layouts/TabSelector';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
-import { useContext, useEffect, useState } from "react";
-import { Context } from "../../Context";
+import { useState } from "react";
 import { useRouter } from "next/router";
+import { deleteUserAction, resetCartAction} from "../../redux/actions";
+import {connect} from "react-redux";
 
 const useStyles = makeStyles((theme) => ({
   title: {
@@ -24,10 +25,9 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const Header = () => {
+const Header = ({deleteUserAction, user, resetCartAction}) => {
   const classes = useStyles();
-    
-  const { user, setUser, resetCart, setLogChange, logChange } = useContext(Context);
+  
   const path = useRouter().pathname;
 
   const [loggedOut, setLoggedOut] = useState(false);
@@ -36,8 +36,8 @@ const Header = () => {
     const res = window.confirm("Are you sure?");
     if(res){
       setLoggedOut(true);
-      setUser({});
-      resetCart();
+      deleteUserAction();
+      resetCartAction();
       window.alert("You have logget out!");
     }else{
       setLoggedOut(false);
@@ -76,4 +76,15 @@ const Header = () => {
   );
 };
 
-export default Header;
+const mapDispatchToProps = {
+  deleteUserAction: deleteUserAction,
+  resetCartAction: resetCartAction
+}
+
+const mapStateToProps = (state) => {
+  return {
+    user: state.user
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Header);
