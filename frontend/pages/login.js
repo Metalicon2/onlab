@@ -16,6 +16,8 @@ import { useContext, useState } from "react";
 import { Context } from "../Context";
 import API from "../utils/API";
 import router from "next/router";
+import {addUserAction} from "../redux/actions";
+import {connect} from "react-redux";
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -44,7 +46,7 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-export default () => {
+const Login = ({addUserAction}) => {
   const classes = useStyles();
   const { setUser } = useContext(Context);
   const [email, setEmail] = useState("");
@@ -58,6 +60,7 @@ export default () => {
     }
     const res = await API.post("/user/login", user).catch(err => console.log(err));
     if(res.data.status == 200){
+      addUserAction(user);
       setUser(user);
       router.push("/");
       window.alert("logged in!");
@@ -144,3 +147,11 @@ export default () => {
     </Container>
   );
 }
+
+Login.getInitialProps = ({store}) => {}
+
+const mapDispatchToProps = {
+  addUserAction: addUserAction
+}
+
+export default connect(null, mapDispatchToProps)(Login);

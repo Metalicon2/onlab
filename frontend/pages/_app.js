@@ -6,6 +6,9 @@ import { Header, Footer } from "../components/Layouts";
 import "react-awesome-slider/dist/styles.css";
 import {Context} from "../Context";
 import { useState, useEffect } from "react";
+import {Provider} from "react-redux";
+import withRedux from "next-redux-wrapper";
+import store from "../redux/store";
 
 const useStyle = makeStyles(() => ({
   root: {
@@ -61,7 +64,7 @@ const App = ({ Component, pageProps }) => {
   }
 
   return (
-    <>
+    <Provider store={store}>
       <Context.Provider value={{
         user: user,
         setUser: setUserFunc,
@@ -103,8 +106,16 @@ const App = ({ Component, pageProps }) => {
         <Footer style={{ flex: 1 }} />
       </Container>
       </Context.Provider>
-    </>
+    </Provider>
   );
 };
 
-export default App;
+const makeStore = () => store;
+
+App.getInitialProps = async ({Component, ctx}) => {
+  const pageProps = Component.getInitialProps ? await Component.getInitialProps(ctx) : {};
+
+  return {pageProps: pageProps} 
+}
+
+export default withRedux(makeStore)(App);
