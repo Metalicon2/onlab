@@ -13,7 +13,7 @@ const useStyles = makeStyles(() => ({
 const TabSelectors = () => {
   const classes = useStyles();
   const [value, setValue] = React.useState(-1);
-  const {menu} = useRouter().query;
+  const { menu } = useRouter().query;
 
   useEffect(() => {
     !menu ? setValue(-1) : null;
@@ -30,15 +30,14 @@ const TabSelectors = () => {
   return (
     <div className={classes.root}>
       <Tabs
-        defaultValue={-1}
         value={value}
         onChange={handleChange}
         aria-label="simple tabs example"
         centered
       >
-        <Tab onClick={() => redirect("appetizers")} label="Appetizers" />
-        <Tab onClick={() => redirect("maindishes")} label="Main Dishes" />
-        <Tab onClick={() => redirect("desserts")} label="Desserts" />
+        <Tab onClick={() => redirect("appetizer")} label="Appetizers" />
+        <Tab onClick={() => redirect("maindish")} label="Main Dishes" />
+        <Tab onClick={() => redirect("dessert")} label="Desserts" />
       </Tabs>
     </div>
   );

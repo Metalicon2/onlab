@@ -1,25 +1,19 @@
 import Tabs from "@material-ui/core/Tabs";
 import Tab from "@material-ui/core/Tab";
 
-const TabBar = () => {
-  const [value, setValue] = React.useState(0);
-
-  const handleChange = (event, newValue) => {
-    setValue(newValue);
-  };
+const TabBar = ({subCategoryList, setSubCategory, tabValue, handleChange}) => {
   return (
     <Tabs
+      defaultValue={0}
       orientation="vertical"
       variant="scrollable"
-      value={value}
+      value={tabValue}
       onChange={handleChange}
       aria-label="Vertical tabs example"
     >
-      <Tab label="Item One" />
-      <Tab label="Item Two" />
-      <Tab label="Item Three" />
-      <Tab label="Item Four" />
-      <Tab label="Item Five" />
+      {
+        subCategoryList.map(item => <Tab onClick={() => setSubCategory(item)} key={item} label={item}></Tab>)
+      }
     </Tabs>
   );
 };

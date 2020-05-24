@@ -7,6 +7,9 @@ import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
 import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
+import { useState } from "react";
+import API from "../utils/API";
+import router from "next/router";
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -37,7 +40,31 @@ const useStyles = makeStyles((theme) => ({
 
 export default () => {
   const classes = useStyles();
+  const [email, setEmail] = useState("");
+  const [password1, setPassword1] = useState("");
+  const [password2, setPassword2] = useState("");
+  const [address, setAddress] = useState("");
+  const [phone, setPhone] = useState("");
 
+  const register = async () => {
+    if(!(password1 === password2)) {
+      return window.alert("Passwords didn't match!");
+    }
+    const user = {
+      email: email,
+      password: password1,
+      address: address,
+      phone: phone
+    }
+    const res = await API.post("/user/register", user).catch(e => console.log(e));
+    if(res.data.status == 200){
+      router.push("/login");
+      window.alert("Succesfull registration!");
+    }else{
+      window.alert("Something went wrong!")
+    }
+  }
+  
   return (
     <Container maxWidth="xs"   >
       <CssBaseline />
@@ -59,6 +86,7 @@ export default () => {
             name="email"
             autoComplete="email"
             autoFocus
+            onChange = {(e) => setEmail(e.target.value)}
           />
           <TextField
             variant="outlined"
@@ -70,6 +98,7 @@ export default () => {
             type="password"
             id="password"
             autoComplete="current-password"
+            onChange = {(e) => setPassword1(e.target.value)}
           />
           <TextField
             variant="outlined"
@@ -79,14 +108,38 @@ export default () => {
             name="confirm_password"
             label="Confirm Password"
             type="password"
-            id="password"
+            id="password1"
             autoComplete="current-password"
+            onChange = {(e) => setPassword2(e.target.value)}
+          />
+          <TextField
+            variant="outlined"
+            margin="normal"
+            required
+            fullWidth
+            name="address"
+            label="Address"
+            type="text"
+            id="address"
+            onChange = {(e) => setAddress(e.target.value)}
+          />
+          <TextField
+            variant="outlined"
+            margin="normal"
+            required
+            fullWidth
+            name="phone"
+            label="Phone"
+            type="phone"
+            id="phone"
+            onChange = {(e) => setPhone(e.target.value)}
           />
           <Button
             fullWidth
             variant="contained"
             color="primary"
             className={classes.submit}
+            onClick={() => register()}
           >
             Sign Up
           </Button>

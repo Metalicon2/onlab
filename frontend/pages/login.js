@@ -12,6 +12,10 @@ import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
 import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
 import Container from "@material-ui/core/Container";
+import { useContext, useState } from "react";
+import { Context } from "../Context";
+import API from "../utils/API";
+import router from "next/router";
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -36,12 +40,35 @@ const useStyles = makeStyles((theme) => ({
     cursor: "pointer",
   },
   copyright: {
-      margin: theme.spacing(5)
+    margin: theme.spacing(5)
   }
 }));
 
 export default () => {
   const classes = useStyles();
+  const { setUser } = useContext(Context);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  const login = async () => {
+    console.log("logging in...");
+    const user = {
+      email: email,
+      password: password
+    }
+    const res = await API.post("/user/login", user).catch(err => console.log(err));
+    if(res.data.status == 200){
+      setUser(user);
+      router.push("/");
+      window.alert("logged in!");
+    }else if(res.data.status == 400){
+      window.alert("Wrong password!");
+    }else if(res.data.status == 402){
+      window.alert("Empty fields!");
+    }else{
+      window.alert("No such user!");
+    }
+  }
 
   return (
     <Container maxWidth="xs"   >
@@ -64,6 +91,7 @@ export default () => {
             name="email"
             autoComplete="email"
             autoFocus
+            onChange={(e) => setEmail(e.target.value)}
           />
           <TextField
             variant="outlined"
@@ -75,6 +103,7 @@ export default () => {
             type="password"
             id="password"
             autoComplete="current-password"
+            onChange={(e) => setPassword(e.target.value)}
           />
           <FormControlLabel
             control={<Checkbox value="remember" color="primary" />}
@@ -85,6 +114,7 @@ export default () => {
             variant="contained"
             color="primary"
             className={classes.submit}
+            onClick={() => login()}
           >
             Sign In
           </Button>
@@ -99,7 +129,7 @@ export default () => {
             <Grid item>
               <NextLink href="/register">
                 <Link color="inherit" className={classes.link} variant="body2">
-                    Don't have an account? Sign Up
+                  Don't have an account? Sign Up
                 </Link>
               </NextLink>
             </Grid>

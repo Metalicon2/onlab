@@ -1,0 +1,20 @@
+.grow {
+    width: 210px;
+    height: 320px;
+    margin: 10px;
+    transition: all .5s ease-in-out; 
+    animation: createBox .5s;
+    background-color: white;
+    border-radius: 5px;
+}
+
+.grow:hover { transform: scale(1.03); border-radius: 25px;};
+
+@keyframes createBox {
+    from {
+      transform: scale(0);
+    }
+    to {
+      transform: scale(1);
+    }
+}

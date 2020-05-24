@@ -4,6 +4,8 @@ import CssBaseline from "@material-ui/core/CssBaseline";
 import { makeStyles } from "@material-ui/core/styles";
 import { Header, Footer } from "../components/Layouts";
 import "react-awesome-slider/dist/styles.css";
+import {Context} from "../Context";
+import { useState, useEffect } from "react";
 
 const useStyle = makeStyles(() => ({
   root: {
@@ -14,8 +16,63 @@ const useStyle = makeStyles(() => ({
 }));
 
 const App = ({ Component, pageProps }) => {
+
+  const [user, setUser] = useState({});
+  const [subCategory, setSubCategory] = useState("");
+  const [cartArray, setCartArray] = useState([]);
+
+  useEffect(() => {
+    setUser(JSON.parse(localStorage.getItem("user")) || {});
+    setCartArray(JSON.parse(localStorage.getItem("cart")) || []);
+  }, []);
+
+  const setUserFunc = (user) => {
+    setUser(user);
+    localStorage.setItem("user", JSON.stringify(user));
+  }
+
+  const addCart = (item) => {
+    const res = window.confirm("Are you sure?");
+    if(res) {
+      setCartArray(prevState => [...prevState, item]);
+      localStorage.setItem("cart", JSON.stringify([...cartArray, item]));
+    }
+  }
+
+  const removeCart = (item) => {
+    const data = cartArray;
+    const searchedIndex = data.findIndex(element => element.name === item.name);
+    data.splice(searchedIndex,1);
+    setCartArray(data);
+    localStorage.setItem("cart", JSON.stringify(data));
+  }
+
+  const updateCart = (oldData, newData) => {
+    const data = cartArray;
+    const searchedOldIndex = data.findIndex(element => element.name === oldData.name);
+    data[searchedOldIndex] = newData;
+    setCartArray(data);
+    localStorage.setItem("cart", JSON.stringify(data));
+  }
+
+  const resetCart = () => {
+    setCartArray([]);
+    localStorage.setItem("cart", JSON.stringify([]));
+  }
+
   return (
     <>
+      <Context.Provider value={{
+        user: user,
+        setUser: setUserFunc,
+        subCategory: subCategory,
+        setSubCategory: setSubCategory,
+        cart: cartArray,
+        addCart: addCart,
+        removeCart: removeCart,
+        updateCart: updateCart,
+        resetCart: resetCart
+      }}>
       <Head>
         <link
           rel="stylesheet"
@@ -42,9 +99,10 @@ const App = ({ Component, pageProps }) => {
           }}
         >
           <Component {...pageProps} />
-          </div>
+        </div>
         <Footer style={{ flex: 1 }} />
       </Container>
+      </Context.Provider>
     </>
   );
 };

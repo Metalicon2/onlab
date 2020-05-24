@@ -1,6 +1,4 @@
 import { makeStyles } from '@material-ui/core/styles';
-import clsx from 'clsx';
-import Card from '@material-ui/core/Card';
 import CardHeader from '@material-ui/core/CardHeader';
 import CardMedia from '@material-ui/core/CardMedia';
 import CardContent from '@material-ui/core/CardContent';
@@ -9,15 +7,15 @@ import Avatar from '@material-ui/core/Avatar';
 import IconButton from '@material-ui/core/IconButton';
 import Typography from '@material-ui/core/Typography';
 import { red } from '@material-ui/core/colors';
-import FavoriteIcon from '@material-ui/icons/Favorite';
-import ShareIcon from '@material-ui/icons/Share';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import MoreVertIcon from '@material-ui/icons/MoreVert';
+import AddShoppingCartIcon from '@material-ui/icons/AddShoppingCart';
+import styles from "./Card.module.css";
+import { useContext } from 'react';
+import { Context } from '../../Context';
 
 const useStyles = makeStyles((theme) => ({
   root: {
-    width: "200px",
-    height: "300px",
+    width: "210px",
+    height: "320px",
     margin: 10,
   },
   media: {
@@ -25,11 +23,7 @@ const useStyles = makeStyles((theme) => ({
     paddingTop: '56.25%',
   },
   expand: {
-    transform: 'rotate(deg)',
     marginLeft: 'auto',
-    transition: theme.transitions.create('transform', {
-      duration: theme.transitions.duration.shortest,
-    }),
   },
   expandOpen: {
     transform: 'rotate(180deg)',
@@ -39,34 +33,27 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const CardItem = ({name, desc}) => {
-  const classes = useStyles();
-  const [expanded, setExpanded] = React.useState(false);
+const CardItem = ({ name, desc, price, color, src}) => {
 
-  const handleExpandClick = () => {
-    setExpanded(!expanded);
-  };
+  const classes = useStyles();
+
+  const { addCart } = useContext(Context);
 
   return (
-    <Card className={classes.root}>
+    <div className={styles.grow}>
       <CardHeader
         avatar={
-          <Avatar aria-label="recipe" className={classes.avatar}>
-            R
+          <Avatar aria-label="recipe" style={{backgroundColor: color}}>
+            {name.charAt(0).toUpperCase()}
           </Avatar>
-        }
-        action={
-          <IconButton aria-label="settings">
-            <MoreVertIcon />
-          </IconButton>
         }
         title={name}
       />
       <CardMedia
         className={classes.media}
-        image="/static/images/paella.jpg"
+        image={src}
         title="Paella dish"
-        maxWidth="30"
+        maxwidth="30"
       />
       <CardContent>
         <Typography variant="body2" color="textSecondary" component="p">
@@ -74,24 +61,15 @@ const CardItem = ({name, desc}) => {
         </Typography>
       </CardContent>
       <CardActions disableSpacing>
-        <IconButton aria-label="add to favorites">
-          <FavoriteIcon />
-        </IconButton>
-        <IconButton aria-label="share">
-          <ShareIcon />
-        </IconButton>
+      <p style={{marginLeft: "10px"}}>{price} Ft</p>
         <IconButton
-          className={clsx(classes.expand, {
-            [classes.expandOpen]: expanded,
-          })}
-          onClick={handleExpandClick}
-          aria-expanded={expanded}
-          aria-label="show more"
+          className={classes.expand}
+          onClick={() => addCart({name: name, price: price, date: new Date(), quantity: 1})}
         >
-          <ExpandMoreIcon />
+          <AddShoppingCartIcon />
         </IconButton>
       </CardActions>
-    </Card>
+    </div>
   );
 }
 

@@ -1,12 +1,5 @@
 module.exports = (sequelize, DataTypes) => {
     const Food = sequelize.define("Food", {
-        id: {
-            type: DataTypes.INTEGER,
-            autoIncrement: true,
-            allowNull: false,
-            unique: true,
-            primaryKey: true
-        },
         price: {
             type: DataTypes.INTEGER(10),
             allowNull: false
@@ -14,11 +7,22 @@ module.exports = (sequelize, DataTypes) => {
         name: {
             type: DataTypes.STRING(50),
             allowNull: false,
-            unique: true
         },
         mainCategory: DataTypes.STRING(30),
         subCategory: DataTypes.STRING(30),
         description: {
+            type: DataTypes.STRING(100)
+        },
+        color: {
+            type: DataTypes.STRING(10)
+        },
+        vegetarian: {
+            type: DataTypes.BOOLEAN
+        },
+        spicy: {
+            type: DataTypes.BOOLEAN
+        },
+        src: {
             type: DataTypes.STRING(100)
         }
     });
