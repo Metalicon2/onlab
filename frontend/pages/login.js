@@ -58,7 +58,7 @@ const Login = ({addUserAction}) => {
     }
     const res = await API.post("/user/login", user).catch(err => console.log(err));
     if(res.data.status == 200){
-      addUserAction(user);
+      addUserAction({email: user.email, id: res.data.payload});
       router.push("/");
       window.alert("logged in!");
     }else if(res.data.status == 400){

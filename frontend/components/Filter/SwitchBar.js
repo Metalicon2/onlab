@@ -1,12 +1,13 @@
 import { FormControlLabel, Switch } from "@material-ui/core";
 import { connect } from "react-redux";
-import {setCheckedVegaAction, setCheckedSpicyAction, setIsFilteredAction, setFilteredFoodListAction} from "../../redux/actions";
+import { setCheckedVegaAction, setCheckedSpicyAction, setIsFilteredAction, setFilteredFoodListAction } from "../../redux/actions";
 
-const SwitchBar = ({vegaChecked, spicyChecked, foodList, setCheckedVegaAction, setCheckedSpicyAction, setIsFilteredAction, setFilteredFoodListAction}) => {
+const SwitchBar = ({ vegaChecked, spicyChecked, foodList, lowToHigh, setCheckedVegaAction, setCheckedSpicyAction, setIsFilteredAction, setFilteredFoodListAction, }) => {
 
   const handleSwitch = (switchName) => {
     let tempVega = vegaChecked;
     let tempSpicy = spicyChecked;
+    let tempLH = lowToHigh;
     if (switchName === "vega") {
       tempVega = !vegaChecked;
       setCheckedVegaAction(tempVega);
@@ -35,14 +36,12 @@ const SwitchBar = ({vegaChecked, spicyChecked, foodList, setCheckedVegaAction, s
 
   return (
     <>
-      <FormControlLabel control={<Switch color="primary"/>} label="Price (L -> H)" />
-      <FormControlLabel control={<Switch color="primary"/>} label="Price (H -> L)" />
       <FormControlLabel
-        control={<Switch color="primary" checked={vegaChecked} onChange={() => handleSwitch("vega")}/>}
+        control={<Switch color="primary" checked={vegaChecked} onChange={() => handleSwitch("vega")} />}
         label="Vegetarian"
       />
-      <FormControlLabel control={<Switch color="primary" checked={spicyChecked} onChange={() => handleSwitch("spicy")}/>} 
-      label="Spicy" />
+      <FormControlLabel control={<Switch color="primary" checked={spicyChecked} onChange={() => handleSwitch("spicy")} />}
+        label="Spicy" />
     </>
   );
 };
@@ -51,7 +50,7 @@ const mapStateToProps = (state) => {
   return {
     vegaChecked: state.vegaChecked,
     spicyChecked: state.spicyChecked,
-    foodList: state.foodList
+    foodList: state.foodList,
   }
 }
 
@@ -59,7 +58,7 @@ const mapDispatchToProps = {
   setCheckedVegaAction: setCheckedVegaAction,
   setCheckedSpicyAction: setCheckedSpicyAction,
   setIsFilteredAction: setIsFilteredAction,
-  setFilteredFoodListAction, setFilteredFoodListAction
+  setFilteredFoodListAction, setFilteredFoodListAction,
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(SwitchBar);

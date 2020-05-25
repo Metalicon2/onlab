@@ -13,8 +13,8 @@ import TabSelector from '../Layouts/TabSelector';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import { useState } from "react";
 import { useRouter } from "next/router";
-import { deleteUserAction, resetCartAction} from "../../redux/actions";
-import {connect} from "react-redux";
+import { deleteUserAction, resetCartAction, setLoadedAction } from "../../redux/actions";
+import { connect } from "react-redux";
 
 const useStyles = makeStyles((theme) => ({
   title: {
@@ -25,21 +25,21 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const Header = ({deleteUserAction, user, resetCartAction}) => {
+const Header = ({ deleteUserAction, user, resetCartAction, setLoadedAction }) => {
   const classes = useStyles();
-  
+
   const path = useRouter().pathname;
 
   const [loggedOut, setLoggedOut] = useState(false);
 
   const logout = () => {
     const res = window.confirm("Are you sure?");
-    if(res){
+    if (res) {
       setLoggedOut(true);
       deleteUserAction();
       resetCartAction();
       window.alert("You have logget out!");
-    }else{
+    } else {
       setLoggedOut(false);
     }
   }
@@ -61,14 +61,14 @@ const Header = ({deleteUserAction, user, resetCartAction}) => {
         </Link>
         {
           !user.email && <Link href="/login">
-          <IconButton color="inherit">
-            <PersonIcon />
-          </IconButton>
-        </Link>
+            <IconButton color="inherit">
+              <PersonIcon />
+            </IconButton>
+          </Link>
         }
-        {user.email && <Link href={loggedOut ? "/" : path}>
+        {user.email && <Link href={path}>
           <IconButton onClick={() => logout()} color="inherit">
-            <ExitToAppIcon/>
+            <ExitToAppIcon />
           </IconButton>
         </Link>}
       </Toolbar>
@@ -78,12 +78,13 @@ const Header = ({deleteUserAction, user, resetCartAction}) => {
 
 const mapDispatchToProps = {
   deleteUserAction: deleteUserAction,
-  resetCartAction: resetCartAction
+  resetCartAction: resetCartAction,
+  setLoadedAction: setLoadedAction
 }
 
 const mapStateToProps = (state) => {
   return {
-    user: state.user
+    user: state.user,
   }
 }
 

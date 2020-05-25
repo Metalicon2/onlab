@@ -1,17 +1,16 @@
 import { useRouter } from "next/router";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import CardList from "../../components/Cards/CardList";
 import API from "../../utils/API";
 import { connect } from "react-redux";
 import {
   setMaxPriceAction, setFoodListAction, setFilteredFoodListAction,
-  setIsFilteredAction, setSubCategoryAction, setTabValueAction, setSubCategoryListAction, setSliderValueAction
+  setIsFilteredAction, setSubCategoryAction, setTabValueAction, setSubCategoryListAction, setSliderValueAction,
+  setLoadedAction
 } from "../../redux/actions";
 
 const Menu = (
-  { allFood, foodList, isFiltered, subCategory,
-    setIsFilteredAction, setMaxPriceAction, setFoodListAction,
-    setSubCategoryAction, setTabValueAction, setSubCategoryListAction, setSliderValueAction }) => {
+  { user, setMaxPriceAction, setFoodListAction, setSubCategoryAction, setTabValueAction, setSubCategoryListAction, setLoadedAction}) => {
 
   const { menu } = useRouter().query;
 
@@ -27,63 +26,31 @@ const Menu = (
   }
 
   useEffect(() => {
+    setLoadedAction(false);
     const setList = async (menu) => {
-      /*if (typeof allFood === "object" && allFood.length > 0) {
-        const tempFood = allFood.filter(item => item.mainCategory === menu);
-        const temp = sortSubCategory(tempFood);
+      const res = await API.get(`/food/main/${menu}`);
+      if (res.data[0].name) {
+        const temp = sortSubCategory(res.data);
         setSubCategoryListAction(temp);
-        setMaxPriceAction(sortMaxPrice(tempFood));
+        setMaxPriceAction(sortMaxPrice(res.data));
         setSubCategoryAction(temp[0]);
         setTabValueAction(0);
-      } else {
-        */const res = await API.get(`/food/main/${menu}`);
-        if (res.data[0].name) {
-          const temp = sortSubCategory(res.data);
-          setSubCategoryListAction(temp);
-          setMaxPriceAction(sortMaxPrice(res.data));
-          setSubCategoryAction(temp[0]);
-          setTabValueAction(0);
-        }
+        res.data = res.data.sort(function (a, b) {
+          return a.price - b.price;
+        })
+        setFoodListAction(res.data.filter(item => item.subCategory === temp[0]));
+        setLoadedAction(true);
       }
+    }
     setList(menu);
   }, [menu]);
 
-  useEffect(() => {
-    const setList = async () => {
-      const res = await API.get(`/food/sub/${subCategory}`);
-      if (res.data[0].name) {
-        setMaxPriceAction(sortMaxPrice(res.data));
-        if (isFiltered) {
-          setIsFilteredAction(false);
-          setSliderValueAction([0, sortMaxPrice(res.data)]);
-        }
-        setFoodListAction(res.data);
-      }
-    }
-    if (subCategory) setList();
-  }, [subCategory]);
-
   return (
     <>
-      {foodList.length !== 0 &&
         <CardList />
-      }
     </>
   )
 };
-
-Menu.getInitialProps = async () => {
-  const res = await API.get(`/food/all`);
-  if (res.data[0].name) {
-    return {
-      allFood: res.data
-    }
-  } else {
-    return {
-      allFood: []
-    }
-  }
-}
 
 const mapStateToProps = (state) => {
   return {
@@ -91,7 +58,8 @@ const mapStateToProps = (state) => {
     foodList: state.foodList,
     filteredFoodList: state.filteredFoodList,
     isFiltered: state.isFiltered,
-    subCategory: state.subCategory
+    subCategory: state.subCategory,
+    user: state.user
   }
 }
 
@@ -103,7 +71,8 @@ const mapDispatchToProps = {
   setSubCategoryAction: setSubCategoryAction,
   setTabValueAction: setTabValueAction,
   setSubCategoryListAction: setSubCategoryListAction,
-  setSliderValueAction: setSliderValueAction
+  setSliderValueAction: setSliderValueAction,
+  setLoadedAction
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(Menu);

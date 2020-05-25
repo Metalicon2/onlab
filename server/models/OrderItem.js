@@ -7,7 +7,11 @@ module.exports = (sequelize, DataTypes) => {
             unique: true,
             primaryKey: true,
         },
-        quantity: DataTypes.INTEGER(20)
+        quantity: DataTypes.INTEGER(20),
+        orderDate: {
+            type: DataTypes.DATE,
+            allowNull: false
+        }
     });
 
     OrderItem.associate = models => {

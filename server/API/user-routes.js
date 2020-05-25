@@ -39,7 +39,8 @@ router.post("/user/login", async (ctx) => {
             if(isCorrectPW){
                 ctx.response.body = {
                     msg: "login success",
-                    status: 200
+                    status: 200,
+                    payload: res.id
                 }
             }else{
                 ctx.response.body = {

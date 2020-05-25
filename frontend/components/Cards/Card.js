@@ -33,22 +33,23 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const CardItem = ({ name, desc, price, color, src, addToCartAction}) => {
+const CardItem = ({ name, desc, price, color, src, addToCartAction, id }) => {
 
   const classes = useStyles();
 
   const addCart = (item) => {
     const res = window.confirm("Are you sure?");
-    if(res) {
+    if (res) {
       addToCartAction(item);
     }
   }
 
   return (
     <div className={styles.grow}>
+      {console.log("render")}
       <CardHeader
         avatar={
-          <Avatar aria-label="recipe" style={{backgroundColor: color}}>
+          <Avatar aria-label="recipe" style={{ backgroundColor: color }}>
             {name.charAt(0).toUpperCase()}
           </Avatar>
         }
@@ -66,10 +67,10 @@ const CardItem = ({ name, desc, price, color, src, addToCartAction}) => {
         </Typography>
       </CardContent>
       <CardActions disableSpacing>
-      <p style={{marginLeft: "10px"}}>{price} Ft</p>
+        <p style={{ marginLeft: "10px" }}>{price} Ft</p>
         <IconButton
           className={classes.expand}
-          onClick={() => addCart({name: name, price: price, date: new Date(), quantity: 1, src: src})}
+          onClick={() => addCart({ name: name, price: price, date: new Date(), quantity: 1, src: src, id: id })}
         >
           <AddShoppingCartIcon />
         </IconButton>

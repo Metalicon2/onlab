@@ -106,6 +106,13 @@ export const setCheckedSpicyAction = (value) => {
     }
 }
 
+export const setLoadedAction = (value) => {
+    return {
+        type: "SET_LOADED",
+        payload: value
+    }
+}
+
 export const resetCartAction = () => {
     return {
         type: "RESET_CART"

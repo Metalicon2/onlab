@@ -98,6 +98,13 @@ const spicyReducer = (state = false, action) => {
     }
 }
 
+const loadedReducer = (state = false, action) => {
+    switch(action.type){
+        case "SET_LOADED": return action.payload;
+        default: return state;
+    }
+}
+
 export default combineReducers({
     user: userReducer,
     cart: cartReducer,
@@ -110,5 +117,6 @@ export default combineReducers({
     subCategoryList: subCategoryListReducer,
     sliderValue: sliderValueReducer,
     vegaChecked: vegaReducer,
-    spicyChecked: spicyReducer
+    spicyChecked: spicyReducer,
+    loaded: loadedReducer
 });

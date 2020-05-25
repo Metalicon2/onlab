@@ -4,11 +4,11 @@ import CssBaseline from "@material-ui/core/CssBaseline";
 import { makeStyles } from "@material-ui/core/styles";
 import { Header, Footer } from "../components/Layouts";
 import "react-awesome-slider/dist/styles.css";
-import { Context } from "../Context";
-import { useState } from "react";
 import { Provider } from "react-redux";
 import withRedux from "next-redux-wrapper";
 import store from "../redux/store";
+import { persistStore } from 'redux-persist'
+import { PersistGate } from 'redux-persist/integration/react'
 
 const useStyle = makeStyles(() => ({
   root: {
@@ -18,10 +18,13 @@ const useStyle = makeStyles(() => ({
   },
 }));
 
+let persistor = persistStore(store);
+
 const App = ({ Component, pageProps }) => {
 
   return (
     <Provider store={store}>
+       <PersistGate loading={null} persistor={persistor}>
         <Head>
           <link
             rel="stylesheet"
@@ -51,6 +54,7 @@ const App = ({ Component, pageProps }) => {
           </div>
           <Footer style={{ flex: 1 }} />
         </Container>
+        </PersistGate>
     </Provider>
   );
 };

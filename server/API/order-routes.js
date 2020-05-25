@@ -2,24 +2,40 @@ const router = require("koa-router")();
 const db = require("../models");
 
 router.post("/order/new", async (ctx) => {
-    console.log(ctx.request.body.userid);
     const Order = await db.Order.create({
-        user_id: ctx.request.body.userid  
+        user_id: ctx.request.body[0].userid
     }).catch(err => console.log(err));
+    let errCounter = ctx.request.body.length;
     if(Order.id){
-        const OrderItem = await db.OrderItem.create({
-            quantity: ctx.request.body.quantity,
-            food_id: ctx.request.body.foodid,
-            order_id: Order.id
-        }).catch(err => console.log(err));
-        if(OrderItem.id){
-            ctx.response.body = "Created new order!";
+        ctx.request.body.map(async orderItem => {
+            const OrderItem = await db.OrderItem.create({
+                quantity: orderItem.quantity,
+                food_id: orderItem.foodid,
+                orderDate: orderItem.orderDate,
+                order_id: Order.id
+            }).catch(err => console.log(err));
+            if(!OrderItem.id){
+                --errCounter;
+            }
+        });
+        if(errCounter == ctx.request.body.length){
+            ctx.response.body = {
+                msg: "Created new order!",
+                status: 200
+            }
         }else{
-            ctx.response.body = "Failed to create new order!";
+            ctx.response.body = {
+                msg: "Failed to create new order!",
+                status: 401
+            }
         }
     }else{
-        ctx.response.body = "Cannot make new order!";
+        ctx.response.body = {
+                msg: "Cannot make new order!",
+                status: 401
+        }
     }
+    console.log(ctx.request.body);
 });
 
 router.get("/order/all", async (ctx) => {

@@ -2,8 +2,8 @@
     width: 210px;
     height: 320px;
     margin: 10px;
-    transition: all .5s ease-in-out; 
-    animation: createBox .5s;
+    transition: all 0.5s ease-in-out; 
+    animation: createBox 1s;
     background-color: white;
     border-radius: 5px;
 }
@@ -12,9 +12,11 @@
 
 @keyframes createBox {
     from {
-      transform: scale(0.75);
+      opacity: 0.4;
+      transform: scale(0.95);
     }
     to {
+      opacity: 1;
       transform: scale(1);
     }
 }

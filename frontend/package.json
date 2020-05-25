@@ -20,6 +20,8 @@
     "react-material-ui-carousel": "^1.4.3",
     "react-redux": "^7.2.0",
     "redux": "^4.0.5",
-    "redux-devtools-extension": "^2.13.8"
+    "redux-devtools-extension": "^2.13.8",
+    "redux-localstorage": "^0.4.1",
+    "redux-persist": "^6.0.0"
   }
 }
