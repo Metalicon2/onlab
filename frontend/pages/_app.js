@@ -7,8 +7,8 @@ import "react-awesome-slider/dist/styles.css";
 import { Provider } from "react-redux";
 import withRedux from "next-redux-wrapper";
 import store from "../redux/store";
-import { persistStore } from 'redux-persist'
-import { PersistGate } from 'redux-persist/integration/react'
+import { persistStore } from 'redux-persist';
+import { PersistGate } from 'redux-persist/integration/react';
 
 const useStyle = makeStyles(() => ({
   root: {
@@ -40,13 +40,14 @@ const App = ({ Component, pageProps }) => {
           />
         </Head>
         <CssBaseline />
+        {console.log("itt?")}
         <Container maxWidth="lg" className={useStyle().root}>
           <Header style={{ flex: 1 }} />
           <div
             style={{
               flex: 1,
               display: "flex",
-              backgroundColor: "#E8E8E8",
+              backgroundColor: "rgb(245,231,194)",
               alignItems: "flex-start",
             }}
           >

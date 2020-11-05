@@ -18,8 +18,8 @@ module.exports = (sequelize, DataTypes) => {
         OrderItem.belongsTo(models.Order);
         OrderItem.belongsTo(models.Food, {
             foreignKey: {
-            name: "food_id",
-            allowNull: false
+                name: "food_id",
+                allowNull: false
             }
         });
     }

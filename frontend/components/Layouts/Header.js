@@ -19,13 +19,25 @@ import { connect } from "react-redux";
 const useStyles = makeStyles((theme) => ({
   title: {
     cursor: "pointer",
+    color: "black",
+    textShadow: "3px 3px 5px rgba(0,0,0,0.5)"
   },
   tabs: {
     flexGrow: 1,
   },
+  root: {
+    backgroundColor: "rgb(245,231,194)",
+    border: "3px dotted black",
+    "& > div": {
+      color: "black",
+    }
+  },
+  icon: {
+    color: "#FA7D32"
+  }
 }));
 
-const Header = ({ deleteUserAction, user, resetCartAction, setLoadedAction }) => {
+const Header = ({ deleteUserAction, user, resetCartAction }) => {
   const classes = useStyles();
 
   const path = useRouter().pathname;
@@ -45,9 +57,10 @@ const Header = ({ deleteUserAction, user, resetCartAction, setLoadedAction }) =>
   }
 
   return (
-    <AppBar position="sticky">
+    <AppBar position="sticky" className={classes.root}>
+      {console.log("miért futok le kétszer?")}
       <Toolbar>
-        <FastfoodIcon />
+        <FastfoodIcon className={classes.icon}/>
         <Link href="/">
           <Typography variant="h6" className={classes.title}>
             Foodster
@@ -79,7 +92,6 @@ const Header = ({ deleteUserAction, user, resetCartAction, setLoadedAction }) =>
 const mapDispatchToProps = {
   deleteUserAction: deleteUserAction,
   resetCartAction: resetCartAction,
-  setLoadedAction: setLoadedAction
 }
 
 const mapStateToProps = (state) => {

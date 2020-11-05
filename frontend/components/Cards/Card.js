@@ -33,15 +33,20 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const CardItem = ({ name, desc, price, color, src, addToCartAction, id }) => {
+const CardItem = ({ name, desc, price, color, src, addToCartAction, id, cart}) => {
 
   const classes = useStyles();
 
   const addCart = (item) => {
+    const isContains = cart.findIndex(cartItem => cartItem.id === item.id);
+    if(isContains){
     const res = window.confirm("Are you sure?");
     if (res) {
       addToCartAction(item);
     }
+  }else{
+    window.alert("Item already in the cart!");
+  }
   }
 
   return (
@@ -83,4 +88,10 @@ const mapDipatchToProps = {
   addToCartAction: addToCartAction
 }
 
-export default connect(null, mapDipatchToProps)(CardItem);
+const mapStateToProps = (state) => {
+  return {
+    cart: state.cart
+  }
+}
+
+export default connect(mapStateToProps, mapDipatchToProps)(CardItem);

@@ -31,7 +31,7 @@ const getRandomColor = () => {
       color += letters[Math.floor(Math.random() * 8 + 3)];
     }
     return color;
-  }
+}
 
 const selectSubCategory = (index) => {
     //maindish:
@@ -337,5 +337,6 @@ module.exports = [
         src: `/static/images/${selectSubCategory(index)}${Math.floor((Math.random()*7) + 1)}.jpg`,
         createdAt: date,
         updatedAt: date,
+        availableDate: "to be done"
     }
 });
