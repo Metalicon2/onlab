@@ -1,6 +1,7 @@
 const bcrypt = require("bcrypt");
 const router = require("koa-router")();
 const db = require("../models");
+const jwt = require("jsonwebtoken");
 
 router.post("/user/register", async (ctx) => {
     const { email, password, address, phone} = ctx.request.body;
@@ -37,10 +38,13 @@ router.post("/user/login", async (ctx) => {
         if(res){
             const isCorrectPW = await bcrypt.compare(ctx.request.body.password, res.password_hash);
             if(isCorrectPW){
+                //here generate jwt token
+                const newToken = jwt.sign(res.dataValues, process.env.JWT_SECRET, {expiresIn: 30});
                 ctx.response.body = {
                     msg: "login success",
                     status: 200,
-                    payload: res.id
+                    payload: res.id,
+                    token: newToken
                 }
             }else{
                 ctx.response.body = {
