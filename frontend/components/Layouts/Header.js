@@ -19,18 +19,10 @@ import { connect } from "react-redux";
 const useStyles = makeStyles((theme) => ({
   title: {
     cursor: "pointer",
-    color: "black",
     textShadow: "3px 3px 5px rgba(0,0,0,0.5)"
   },
   tabs: {
     flexGrow: 1,
-  },
-  root: {
-    backgroundColor: "rgb(245,231,194)",
-    border: "3px dotted black",
-    "& > div": {
-      color: "black",
-    }
   },
   icon: {
     color: "#FA7D32"

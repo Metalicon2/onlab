@@ -2,7 +2,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import Tabs from "@material-ui/core/Tabs";
 import Tab from "@material-ui/core/Tab";
 import Router, { useRouter } from "next/router";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 
 const useStyles = makeStyles(() => ({
@@ -13,9 +13,6 @@ const useStyles = makeStyles(() => ({
     backgroundColor: "#FA7D32",
   },
   something: {
-    "& > div > div > button:hover": {
-      color: "#FA7D32",
-    },
     "& > div > div > button": {
       opacity: 1,
       '&$selected': {
@@ -28,7 +25,7 @@ const useStyles = makeStyles(() => ({
 
 const TabSelectors = () => {
   const classes = useStyles();
-  const [value, setValue] = React.useState(-1);
+  const [value, setValue] = useState(-1);
   const { menu } = useRouter().query;
 
   useEffect(() => {
@@ -53,7 +50,7 @@ const TabSelectors = () => {
         TabIndicatorProps={{ className: classes.tabStyles }}
         className={classes.something}
       >
-        <Link href='/menu/[menu]' as={`/menu/appetizer`}><a>asd</a></Link>
+        <Tab onClick={() => redirect("appetizer")} label="Appetizer" />
         <Tab onClick={() => redirect("maindish")} label="Main Dishes" />
         <Tab onClick={() => redirect("dessert")} label="Desserts" />
       </Tabs>

@@ -7,8 +7,9 @@ import "react-awesome-slider/dist/styles.css";
 import { Provider } from "react-redux";
 import withRedux from "next-redux-wrapper";
 import store from "../redux/store";
-import { persistStore } from 'redux-persist';
-import { PersistGate } from 'redux-persist/integration/react';
+import { persistStore } from "redux-persist";
+import { PersistGate } from "redux-persist/integration/react";
+import "mapbox-gl/dist/mapbox-gl.css";
 
 const useStyle = makeStyles(() => ({
   root: {
@@ -16,16 +17,22 @@ const useStyle = makeStyles(() => ({
     flexDirection: "column",
     height: "100vh",
   },
+  componentStyle: {
+    flex: 1,
+    display: "flex",
+    alignItems: "flex-start",
+    backgroundColor: "rgb(240,240,240)",
+  },
 }));
 
 let persistor = persistStore(store);
 
 const App = ({ Component, pageProps }) => {
-
   return (
     <Provider store={store}>
-       <PersistGate loading={null} persistor={persistor}>
+      <PersistGate loading={null} persistor={persistor}>
         <Head>
+          <title>Foodster</title>
           <link
             rel="stylesheet"
             href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap"
@@ -34,28 +41,24 @@ const App = ({ Component, pageProps }) => {
             rel="stylesheet"
             href="https://fonts.googleapis.com/icon?family=Material+Icons"
           />
+          <link
+            rel="stylesheet"
+            href="https://api.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.css"
+          />
           <meta
             name="viewport"
             content="minimum-scale=1, initial-scale=1, width=device-width"
           />
         </Head>
         <CssBaseline />
-        {console.log("itt?")}
         <Container maxWidth="lg" className={useStyle().root}>
-          <Header style={{ flex: 1 }} />
-          <div
-            style={{
-              flex: 1,
-              display: "flex",
-              backgroundColor: "rgb(245,231,194)",
-              alignItems: "flex-start",
-            }}
-          >
+          <Header />
+          <div className={useStyle().componentStyle}>
             <Component {...pageProps} />
           </div>
-          <Footer style={{ flex: 1 }} />
+          <Footer />
         </Container>
-        </PersistGate>
+      </PersistGate>
     </Provider>
   );
 };
@@ -63,9 +66,11 @@ const App = ({ Component, pageProps }) => {
 const makeStore = () => store;
 
 App.getInitialProps = async ({ Component, ctx }) => {
-  const pageProps = Component.getInitialProps ? await Component.getInitialProps(ctx) : {};
+  const pageProps = Component.getInitialProps
+    ? await Component.getInitialProps(ctx)
+    : {};
 
-  return { pageProps: pageProps }
-}
+  return { pageProps: pageProps };
+};
 
 export default withRedux(makeStore)(App);

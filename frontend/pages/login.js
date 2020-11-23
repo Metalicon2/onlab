@@ -15,8 +15,8 @@ import Container from "@material-ui/core/Container";
 import { useState } from "react";
 import API from "../utils/API";
 import router from "next/router";
-import {addUserAction} from "../redux/actions";
-import {connect} from "react-redux";
+import { addUserAction } from "../redux/actions";
+import { connect } from "react-redux";
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -24,7 +24,7 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
-    flexGrow: 1
+    flexGrow: 1,
   },
   avatar: {
     margin: theme.spacing(1),
@@ -41,11 +41,11 @@ const useStyles = makeStyles((theme) => ({
     cursor: "pointer",
   },
   copyright: {
-    margin: theme.spacing(5)
-  }
+    margin: theme.spacing(5),
+  },
 }));
 
-const Login = ({addUserAction}) => {
+const Login = ({ addUserAction }) => {
   const classes = useStyles();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -54,24 +54,26 @@ const Login = ({addUserAction}) => {
     console.log("logging in...");
     const user = {
       email: email,
-      password: password
-    }
-    const res = await API.post("/user/login", user).catch(err => console.log(err));
-    if(res.data.status == 200){
-      addUserAction({email: user.email, id: res.data.payload});
+      password: password,
+    };
+    const res = await API.post("/user/login", user).catch((err) =>
+      console.log(err)
+    );
+    if (res.data.status == 200) {
+      addUserAction({ email: user.email, id: res.data.payload });
       router.push("/");
       window.alert("logged in!");
-    }else if(res.data.status == 400){
+    } else if (res.data.status == 400) {
       window.alert("Wrong password!");
-    }else if(res.data.status == 402){
+    } else if (res.data.status == 402) {
       window.alert("Empty fields!");
-    }else{
+    } else {
       window.alert("No such user!");
     }
-  }
+  };
 
   return (
-    <Container maxWidth="xs"   >
+    <Container maxWidth="xs">
       <CssBaseline />
       <div className={classes.paper}>
         <Avatar className={classes.avatar}>
@@ -137,16 +139,21 @@ const Login = ({addUserAction}) => {
         </form>
       </div>
       <Box>
-        <Typography className={classes.copyright} variant="body2" color="textSecondary" align="center">
+        <Typography
+          className={classes.copyright}
+          variant="body2"
+          color="textSecondary"
+          align="center"
+        >
           Copyright © Foodster {new Date().getFullYear()}
         </Typography>
       </Box>
     </Container>
   );
-}
+};
 
 const mapDispatchToProps = {
-  addUserAction: addUserAction
-}
+  addUserAction: addUserAction,
+};
 
 export default connect(null, mapDispatchToProps)(Login);

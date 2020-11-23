@@ -13,4 +13,5 @@
   --loader-bar-color: #851515;
   --loader-bar-height: 6px;
   z-index: 0;
+  pointer-events: none;
 }
