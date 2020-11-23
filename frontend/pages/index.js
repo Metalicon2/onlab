@@ -1,13 +1,18 @@
 import Carousel from "../components/Carousel";
 import { Container } from "@material-ui/core";
 import TextField from "@material-ui/core/TextField";
+import Fab from "@material-ui/core/Fab";
+import Tooltip from "@material-ui/core/Tooltip";
 import { makeStyles } from "@material-ui/core/styles";
 import { useState, useEffect } from "react";
 import { geolocated } from "react-geolocated";
 import axios from "axios";
-import LinearProgress from "@material-ui/core/LinearProgress";
-import mapboxgl from "mapbox-gl/dist/mapbox-gl";
 import Button from "@material-ui/core/Button";
+import Map, { Marker, Popup } from "react-map-gl";
+import RestaurantIcon from "@material-ui/icons/Restaurant";
+import EmojiPeopleIcon from "@material-ui/icons/EmojiPeople";
+import SentimentVeryDissatisfiedIcon from "@material-ui/icons/SentimentVeryDissatisfied";
+import DoneOutlineRoundedIcon from '@material-ui/icons/DoneOutlineRounded';
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -26,8 +31,13 @@ const useStyles = makeStyles((theme) => ({
     height: "80%",
     display: "flex",
     flexDirection: "column",
-    "& > h1": {
-      color: "white",
+    "& > div": {
+      "& > h1": {
+        color: "white",
+      },
+      "& > svg": {
+        margin: "0 10px",
+      },
     },
   },
   inputContainer: {
@@ -66,79 +76,94 @@ const useStyles = makeStyles((theme) => ({
 const Home = ({ coords, isGeolocationEnabled }) => {
   const classes = useStyles();
 
-  //initalize markers
-  const restaurantMarker = new mapboxgl.Marker({color: "green"});
-  const userMarker = new mapboxgl.Marker({color: "red"});
-  const restaurantPos = [19.077416, 47.51477875];
-
   const [locationVal, setLocationVal] = useState("");
-  const [location, setLocation] = useState({
-    longitude: null,
-    latitude: null,
-    city: null,
+  const [currentLocation, setCurrentLocation] = useState(null);
+  const [viewport, setViewport] = useState({
+    longitude: 19.077416,
+    latitude: 47.51477875,
+    zoom: 11,
+    width: "100%",
+    height: "100%",
   });
-  const [map, setMap] = useState(null);
 
   useEffect(() => {
-    setupMap();
     if (isGeolocationEnabled) {
       autoFetchAddress();
     }
   }, [isGeolocationEnabled]);
 
-  const setupMap = () => {
-    if(!map){
-      setMap(
-        new mapboxgl.Map({
-          accessToken: process.env.MAPBOX_ACCESS_TOKEN,
-          container: "map",
-          style: "mapbox://styles/mapbox/streets-v11",
-          center: restaurantPos,
-          zoom: 12,
-          pitch: 45,
-        })
-      );
-    }
-  };
-
   const autoFetchAddress = async () => {
-    //https://api.geoapify.com/v1/geocode/reverse?lat=47.51477875&lon=19.077416&apiKey=YOUR_API_KEY
-    const res = await axios.get(
-      "https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=47.510780&longitude=19.033356&localityLanguage=hu"
-    );
+    const res = await axios.get("https://api.geoapify.com/v1/geocode/reverse", {
+      params: {
+        lat: coords.latitude,
+        lon: coords.longitude,
+        apiKey: process.env.GEOAPIFY_ACCESS_TOKEN,
+      },
+    });
     if (res.status === 200) {
-      setLocation({
+      setCurrentLocation({
         longitude: coords.longitude,
         latitude: coords.latitude,
-        city: res.data.city,
+        description: res.data.features[0].properties.formatted,
+        selected: false,
       });
-      restaurantMarker.setLngLat(restaurantPos).addTo(map);
-      userMarker.setLngLat([coords.longitude, coords.latitude]).addTo(map);
     } else {
-      window.alert("failed to fetch address!");
+      window.alert("failed find your address!");
     }
   };
 
   const fetchAddress = async () => {
-    restaurantMarker.setLngLat(restaurantPos).addTo(map);
     const resAttempt = await axios.get(
-      `https://api.geoapify.com/v1/geocode/search?text=${locationVal}&filter=circle:19.077416,47.51477875,4000&apiKey=84ee5c97f44248a7b59cdb583177b3ad`
+      "https://api.geoapify.com/v1/geocode/search",
+      {
+        params: {
+          text: locationVal,
+          apiKey: process.env.GEOAPIFY_ACCESS_TOKEN,
+          filter: "circle:19.077416,47.51477875,4000",
+        },
+      }
     );
     console.log(resAttempt);
-    if(resAttempt.data.features.length > 0 && resAttempt.data.features[0].properties.rank.confidence > 0.8){
-      map.removeLayer(userMarker);
-      userMarker.setLngLat([resAttempt.data.features[0].properties.lon, resAttempt.data.features[0].properties.lat]).addTo(map);
-      console.log(resAttempt.data.features[0].properties.lat);
-      console.log(resAttempt.data.features[0].properties.lon);
-    }else{
-      window.alert("Sorry, we are not delivering to your address :(!");
+    if (
+      resAttempt.data.features.length > 0 &&
+      resAttempt.data.features[0].properties.rank.confidence > 0.8
+    ) {
+      setCurrentLocation({
+        longitude: resAttempt.data.features[0].properties.lon,
+        latitude: resAttempt.data.features[0].properties.lat,
+        description: resAttempt.data.features[0].properties.formatted,
+        selected: false,
+      });
+    } else {
+      setCurrentLocation(null);
     }
   };
 
   return (
     <Container className={classes.container}>
-      <div className={classes.form}>
-        <h1>Please enter your location</h1>
+      <div
+        className={classes.form}
+        style={
+          currentLocation
+            ? { border: "3px solid green" }
+            : { border: "3px solid red" }
+        }
+      >
+        <div style={{ display: "flex", alignItems: "center" }}>
+          {currentLocation ? (
+            <>
+              <h1>We deliver to your location!</h1>
+              <DoneOutlineRoundedIcon style={{ fontSize: 50, color: "green" }} />
+            </>
+          ) : (
+            <>
+              <h1>Sorry, we don't deliver to your location!</h1>
+              <SentimentVeryDissatisfiedIcon
+                style={{ fontSize: 50, color: "red" }}
+              />
+            </>
+          )}
+        </div>
         <div className={classes.inputContainer}>
           <TextField
             variant="outlined"
@@ -163,7 +188,74 @@ const Home = ({ coords, isGeolocationEnabled }) => {
           </Button>
         </div>
         <div style={{ height: "100%" }}>
-          <div id="map" style={{ width: "100%", height: "100%" }} />
+          <Map
+            {...viewport}
+            mapStyle="mapbox://styles/metalicon19/ckhumxvog0fpo19qlpvu300e2"
+            mapboxApiAccessToken={process.env.MAPBOX_ACCESS_TOKEN}
+            onViewportChange={(viewport) => setViewport(viewport)}
+          >
+            <Marker latitude={47.51477875} longitude={19.077416}>
+              <Tooltip title="Foodster restaurant">
+                <Fab color="primary" onClick={() => console.log("lol")}>
+                  <RestaurantIcon />
+                </Fab>
+              </Tooltip>
+            </Marker>
+            {currentLocation && (
+              <>
+                <Marker
+                  latitude={currentLocation.latitude}
+                  longitude={currentLocation.longitude}
+                >
+                  <Tooltip title="Your location">
+                    <Fab
+                      color="secondary"
+                      onClick={() =>
+                        setCurrentLocation({
+                          ...currentLocation,
+                          selected: !currentLocation.selected,
+                        })
+                      }
+                    >
+                      <EmojiPeopleIcon />
+                    </Fab>
+                  </Tooltip>
+                </Marker>
+                {currentLocation.selected && (
+                  <Popup
+                    latitude={currentLocation.latitude}
+                    longitude={currentLocation.longitude}
+                    onClose={() =>
+                      setCurrentLocation({
+                        ...currentLocation,
+                        selected: false,
+                      })
+                    }
+                  >
+                    <div
+                      style={{
+                        display: "flex",
+                        flexDirection: "column",
+                        alignItems: "center",
+                      }}
+                    >
+                      <b>Info</b>
+                      <p>{currentLocation.description}</p>
+                      <Button
+                        color="secondary"
+                        variant="contained"
+                        size="small"
+                        onClick={() => window.alert("asd")}
+                      >
+                        Save location
+                      </Button>
+                    </div>
+                  </Popup>
+                )}
+              </>
+            )}
+          </Map>
+          )
         </div>
       </div>
       <Carousel />
@@ -177,14 +269,3 @@ export default geolocated({
   },
   isOptimisticGeolocationEnabled: false,
 })(Home);
-
-/*
-map.addControl(
-        new mapboxgl.GeolocateControl({
-          positionOptions: {
-            enableHighAccuracy: true,
-          },
-          trackUserLocation: true,
-        })
-      );
-*/

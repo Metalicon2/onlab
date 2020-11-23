@@ -9,7 +9,7 @@ import withRedux from "next-redux-wrapper";
 import store from "../redux/store";
 import { persistStore } from "redux-persist";
 import { PersistGate } from "redux-persist/integration/react";
-import "mapbox-gl/dist/mapbox-gl.css";
+import "../public/styles/globalStyles.css";
 
 const useStyle = makeStyles(() => ({
   root: {
