@@ -12,7 +12,10 @@ import Map, { Marker, Popup } from "react-map-gl";
 import RestaurantIcon from "@material-ui/icons/Restaurant";
 import EmojiPeopleIcon from "@material-ui/icons/EmojiPeople";
 import SentimentVeryDissatisfiedIcon from "@material-ui/icons/SentimentVeryDissatisfied";
-import DoneOutlineRoundedIcon from '@material-ui/icons/DoneOutlineRounded';
+import DoneOutlineRoundedIcon from "@material-ui/icons/DoneOutlineRounded";
+
+//TODO: implement save location into redux
+//TODO: implement autoFetch to filter the results correctly
 
 const useStyles = makeStyles((theme) => ({
   container: {
@@ -101,14 +104,32 @@ const Home = ({ coords, isGeolocationEnabled }) => {
       },
     });
     if (res.status === 200) {
-      setCurrentLocation({
-        longitude: coords.longitude,
-        latitude: coords.latitude,
-        description: res.data.features[0].properties.formatted,
-        selected: false,
-      });
+      const filterRes = await axios.get(
+        "https://api.geoapify.com/v1/geocode/search",
+        {
+          params: {
+            text: res.data.features[0].properties.formatted,
+            apiKey: process.env.GEOAPIFY_ACCESS_TOKEN,
+            filter: "circle:19.077416,47.51477875,5000",
+          },
+        }
+      );
+      if (
+        filterRes.status === 200 &&
+        filterRes.data.features.length > 0 &&
+        filterRes.data.features[0].properties.rank.confidence > 0.8
+      ) {
+        setCurrentLocation({
+          longitude: coords.longitude,
+          latitude: coords.latitude,
+          description: res.data.features[0].properties.formatted,
+          selected: false,
+        });
+      }else{
+        setCurrentLocation(null);
+      }
     } else {
-      window.alert("failed find your address!");
+      window.alert("Failed to find your address!");
     }
   };
 
@@ -119,14 +140,14 @@ const Home = ({ coords, isGeolocationEnabled }) => {
         params: {
           text: locationVal,
           apiKey: process.env.GEOAPIFY_ACCESS_TOKEN,
-          filter: "circle:19.077416,47.51477875,4000",
+          filter: "circle:19.077416,47.51477875,5000",
         },
       }
     );
     console.log(resAttempt);
     if (
       resAttempt.data.features.length > 0 &&
-      resAttempt.data.features[0].properties.rank.confidence > 0.8
+      resAttempt.data.features[0].properties.rank.confidence > 0.4
     ) {
       setCurrentLocation({
         longitude: resAttempt.data.features[0].properties.lon,
@@ -136,6 +157,12 @@ const Home = ({ coords, isGeolocationEnabled }) => {
       });
     } else {
       setCurrentLocation(null);
+    }
+  };
+
+  const onEnterPressed = (e) => {
+    if (e.keyCode == 13) {
+      fetchAddress();
     }
   };
 
@@ -153,7 +180,9 @@ const Home = ({ coords, isGeolocationEnabled }) => {
           {currentLocation ? (
             <>
               <h1>We deliver to your location!</h1>
-              <DoneOutlineRoundedIcon style={{ fontSize: 50, color: "green" }} />
+              <DoneOutlineRoundedIcon
+                style={{ fontSize: 50, color: "green" }}
+              />
             </>
           ) : (
             <>
@@ -177,6 +206,7 @@ const Home = ({ coords, isGeolocationEnabled }) => {
             className={classes.input}
             value={locationVal}
             onChange={(e) => setLocationVal(e.target.value)}
+            onKeyDown={(e) => onEnterPressed(e)}
           />
           <Button
             fullWidth
@@ -231,6 +261,7 @@ const Home = ({ coords, isGeolocationEnabled }) => {
                         selected: false,
                       })
                     }
+                    closeOnClick={false}
                   >
                     <div
                       style={{
@@ -245,6 +276,7 @@ const Home = ({ coords, isGeolocationEnabled }) => {
                         color="secondary"
                         variant="contained"
                         size="small"
+                        //implement save to redux here
                         onClick={() => window.alert("asd")}
                       >
                         Save location
@@ -265,7 +297,7 @@ const Home = ({ coords, isGeolocationEnabled }) => {
 
 export default geolocated({
   positionOptions: {
-    enableHighAccuracy: false,
+    enableHighAccuracy: true,
   },
   isOptimisticGeolocationEnabled: false,
 })(Home);
