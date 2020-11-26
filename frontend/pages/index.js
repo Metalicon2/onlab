@@ -13,11 +13,11 @@ import RestaurantIcon from "@material-ui/icons/Restaurant";
 import EmojiPeopleIcon from "@material-ui/icons/EmojiPeople";
 import SentimentVeryDissatisfiedIcon from "@material-ui/icons/SentimentVeryDissatisfied";
 import DoneOutlineRoundedIcon from "@material-ui/icons/DoneOutlineRounded";
+import Autocomplete from "@material-ui/lab/Autocomplete";
 
 //TODO: implement save location into redux
-//TODO: implement autoFetch to filter the results correctly
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
   container: {
     display: "flex",
     flexDirection: "column",
@@ -46,10 +46,12 @@ const useStyles = makeStyles((theme) => ({
   inputContainer: {
     display: "flex",
     marginBottom: "10px",
+    "& > div": {
+      width: "100%",
+    },
   },
   input: {
     margin: 0,
-    flexGrow: 1,
     "& label.Mui-focused": {
       color: "white",
     },
@@ -57,12 +59,15 @@ const useStyles = makeStyles((theme) => ({
       color: "white",
     },
     "& .MuiInput-underline:after": {
-      borderBottomColor: "yellow",
+      borderBottomColor: "blue",
     },
     "& .MuiInputBase-input": {
       color: "white",
     },
     "& .MuiOutlinedInput-root": {
+      "& svg": {
+        color: "white"
+      },
       "& fieldset": {
         borderColor: "white",
       },
@@ -70,7 +75,7 @@ const useStyles = makeStyles((theme) => ({
         borderColor: "white",
       },
       "&.Mui-focused fieldset": {
-        borderColor: "yellow",
+        borderColor: "white",
       },
     },
   },
@@ -84,16 +89,39 @@ const Home = ({ coords, isGeolocationEnabled }) => {
   const [viewport, setViewport] = useState({
     longitude: 19.077416,
     latitude: 47.51477875,
-    zoom: 11,
+    zoom: 12,
     width: "100%",
     height: "100%",
+    pitch: 40 ,
   });
+  const [optionsArr, setOptionsArr] = useState([]);
+  const [timer, setTimer] = useState(null);
 
   useEffect(() => {
     if (isGeolocationEnabled) {
       autoFetchAddress();
     }
   }, [isGeolocationEnabled]);
+
+  //https://stackoverflow.com/questions/18883601/function-to-calculate-distance-between-two-coordinates
+  const getDistanceFromLatLonInKm = (lat1, lon1, lat2, lon2) => {
+    var R = 6371; // Radius of the earth in km
+    var dLat = deg2rad(lat2 - lat1); // deg2rad below
+    var dLon = deg2rad(lon2 - lon1);
+    var a =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos(deg2rad(lat1)) *
+        Math.cos(deg2rad(lat2)) *
+        Math.sin(dLon / 2) *
+        Math.sin(dLon / 2);
+    var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    var d = R * c; // Distance in km
+    return d;
+  };
+
+  const deg2rad = (deg) => {
+    return deg * (Math.PI / 180);
+  };
 
   const autoFetchAddress = async () => {
     const res = await axios.get("https://api.geoapify.com/v1/geocode/reverse", {
@@ -104,20 +132,13 @@ const Home = ({ coords, isGeolocationEnabled }) => {
       },
     });
     if (res.status === 200) {
-      const filterRes = await axios.get(
-        "https://api.geoapify.com/v1/geocode/search",
-        {
-          params: {
-            text: res.data.features[0].properties.formatted,
-            apiKey: process.env.GEOAPIFY_ACCESS_TOKEN,
-            filter: "circle:19.077416,47.51477875,5000",
-          },
-        }
-      );
       if (
-        filterRes.status === 200 &&
-        filterRes.data.features.length > 0 &&
-        filterRes.data.features[0].properties.rank.confidence > 0.8
+        getDistanceFromLatLonInKm(
+          47.51477875,
+          19.077416,
+          coords.latitude,
+          coords.longitude
+        ) <= 5
       ) {
         setCurrentLocation({
           longitude: coords.longitude,
@@ -125,7 +146,7 @@ const Home = ({ coords, isGeolocationEnabled }) => {
           description: res.data.features[0].properties.formatted,
           selected: false,
         });
-      }else{
+      } else {
         setCurrentLocation(null);
       }
     } else {
@@ -144,10 +165,9 @@ const Home = ({ coords, isGeolocationEnabled }) => {
         },
       }
     );
-    console.log(resAttempt);
     if (
       resAttempt.data.features.length > 0 &&
-      resAttempt.data.features[0].properties.rank.confidence > 0.4
+      resAttempt.data.features[0].properties.rank.confidence > 0.5
     ) {
       setCurrentLocation({
         longitude: resAttempt.data.features[0].properties.lon,
@@ -164,6 +184,28 @@ const Home = ({ coords, isGeolocationEnabled }) => {
     if (e.keyCode == 13) {
       fetchAddress();
     }
+  };
+
+  const onChange = (value) => {
+    setLocationVal(value);
+    clearTimeout(timer);
+    if (value.length >= 0) {
+      setTimer(
+        setTimeout(() => {
+          (async () => {
+            const res = await axios.get(
+              `https://api.geoapify.com/v1/geocode/autocomplete?text=${locationVal}&apiKey=${process.env.GEOAPIFY_ACCESS_TOKEN}`
+            );
+            setOptionsArr(
+              res.data.features.map((item) => item.properties.formatted)
+            );
+          })();
+        }, 1000)
+      );
+    } else {
+      setOptionsArr([]);
+    }
+    return () => clearTimeout(timer);
   };
 
   return (
@@ -186,7 +228,7 @@ const Home = ({ coords, isGeolocationEnabled }) => {
             </>
           ) : (
             <>
-              <h1>Sorry, we don't deliver to your location!</h1>
+              <h1>Sorry, we don't deliver to your location, or you didn't give us any information yet!</h1>
               <SentimentVeryDissatisfiedIcon
                 style={{ fontSize: 50, color: "red" }}
               />
@@ -194,19 +236,23 @@ const Home = ({ coords, isGeolocationEnabled }) => {
           )}
         </div>
         <div className={classes.inputContainer}>
-          <TextField
-            variant="outlined"
-            margin="normal"
-            fullWidth
-            id="location"
-            label="Location"
-            name="location"
-            autoComplete="location"
-            autoFocus
-            className={classes.input}
-            value={locationVal}
-            onChange={(e) => setLocationVal(e.target.value)}
-            onKeyDown={(e) => onEnterPressed(e)}
+          <Autocomplete
+            id="combo-box-demo"
+            options={optionsArr}
+            getOptionLabel={(option) => option}
+            filterOptions={(x) => x}
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                variant="outlined"
+                margin="normal"
+                fullWidth
+                className={classes.input}
+                value={locationVal}
+                onChange={(e) => onChange(e.target.value)}
+                onKeyDown={(e) => onEnterPressed(e)}
+              />
+            )}
           />
           <Button
             fullWidth
@@ -226,7 +272,7 @@ const Home = ({ coords, isGeolocationEnabled }) => {
           >
             <Marker latitude={47.51477875} longitude={19.077416}>
               <Tooltip title="Foodster restaurant">
-                <Fab color="primary" onClick={() => console.log("lol")}>
+                <Fab color="primary">
                   <RestaurantIcon />
                 </Fab>
               </Tooltip>

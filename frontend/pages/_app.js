@@ -2,7 +2,7 @@ import Head from "next/head";
 import Container from "@material-ui/core/Container";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import { makeStyles } from "@material-ui/core/styles";
-import { Header, Footer } from "../components/Layouts";
+import Header from "../components/Layouts/Header";
 import "react-awesome-slider/dist/styles.css";
 import { Provider } from "react-redux";
 import withRedux from "next-redux-wrapper";
@@ -56,7 +56,6 @@ const App = ({ Component, pageProps }) => {
           <div className={useStyle().componentStyle}>
             <Component {...pageProps} />
           </div>
-          <Footer />
         </Container>
       </PersistGate>
     </Provider>

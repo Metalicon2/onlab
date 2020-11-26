@@ -3,7 +3,6 @@ import Tabs from "@material-ui/core/Tabs";
 import Tab from "@material-ui/core/Tab";
 import Router, { useRouter } from "next/router";
 import { useEffect, useState } from "react";
-import Link from "next/link";
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -15,12 +14,12 @@ const useStyles = makeStyles(() => ({
   something: {
     "& > div > div > button": {
       opacity: 1,
-      '&$selected': {
-        backgroundColor: '#004C9B',
-        color: 'white',
+      "&$selected": {
+        backgroundColor: "#004C9B",
+        color: "white",
       },
-    }
-  }
+    },
+  },
 }));
 
 const TabSelectors = () => {
@@ -29,7 +28,7 @@ const TabSelectors = () => {
   const { menu } = useRouter().query;
 
   useEffect(() => {
-    !menu ? setValue(-1) : null;
+    !menu ? setValue(null) : null;
   }, [menu]);
 
   const handleChange = (event, newValue) => {
@@ -37,7 +36,7 @@ const TabSelectors = () => {
   };
 
   const redirect = (route) => {
-    Router.push("/menu/[menu]", `/menu/${route}`, { shallow: true });
+    Router.push("/menu/[menu]", `/menu/${route}`);
   };
 
   return (

@@ -16,7 +16,7 @@ import { useRouter } from "next/router";
 import { deleteUserAction, resetCartAction, setLoadedAction } from "../../redux/actions";
 import { connect } from "react-redux";
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
   title: {
     cursor: "pointer",
     textShadow: "3px 3px 5px rgba(0,0,0,0.5)"
@@ -50,7 +50,6 @@ const Header = ({ deleteUserAction, user, resetCartAction }) => {
 
   return (
     <AppBar position="sticky" className={classes.root}>
-      {console.log("miért futok le kétszer?")}
       <Toolbar>
         <FastfoodIcon className={classes.icon}/>
         <Link href="/">
