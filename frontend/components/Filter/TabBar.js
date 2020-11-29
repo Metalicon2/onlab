@@ -1,60 +1,97 @@
 import Tabs from "@material-ui/core/Tabs";
 import Tab from "@material-ui/core/Tab";
 import { connect } from "react-redux";
-import { setSubCategoryAction, setTabValueAction, setMaxPriceAction, setIsFilteredAction, setSliderValueAction, setFoodListAction, setLoadedAction } from "../../redux/actions";
-import API from "../../utils/API";
-import CircularProgress from '@material-ui/core/CircularProgress';
+import {
+  setSubCategoryAction,
+  setTabValueAction,
+  setMaxPriceAction,
+  setIsFilteredAction,
+  setSliderValueAction,
+} from "../../redux/actions";
+import CircularProgress from "@material-ui/core/CircularProgress";
+import { Cookies } from "react-cookie";
+import { makeStyles } from "@material-ui/core/styles";
 
-const TabBar = ({ loaded, tabValue, subCategoryList, isFiltered, 
-  setSubCategoryAction, setTabValueAction, setMaxPriceAction, setIsFilteredAction, setSliderValueAction, setFoodListAction, setLoadedAction }) => {
+const useStyle = makeStyles(() => ({
+  root: {
+    width: "240px",
+    height: "250px",
+  },
+  loading: {
+    display: "flex",
+    justifyContent: "center",
+    width: "240px",
+    height: "250px",
+    "& > div": {
+      alignSelf: "center",
+      width: "40px",
+      height: "40px",
+    },
+  },
+}));
 
-  const handleTabChange = (event, newValue) => {
+const cookie = new Cookies();
+
+const TabBar = ({
+  loaded,
+  tabValue,
+  subCategoryList,
+  isFiltered,
+  setSubCategoryAction,
+  setTabValueAction,
+  setMaxPriceAction,
+  setIsFilteredAction,
+  setSliderValueAction,
+  foodList,
+}) => {
+  const classes = useStyle();
+
+  const handleTabChange = (_, newValue) => {
     setTabValueAction(newValue);
   };
 
-  const sortMaxPrice = (tempData) => {
-    const priceList = tempData.map(item => item.price);
-    return Math.max(...priceList);
-  }
+  const sortMaxPrice = (tempData) =>
+    Math.max(...tempData.map((item) => item.price));
 
-  const handleClick = (item) => {
-    setLoadedAction(false);
-    setSubCategoryAction(item);
-    API.get(`/food/sub/${item}`).then(res => {
-      if (res.data[0].name) {
-        setMaxPriceAction(sortMaxPrice(res.data));
-        if (isFiltered) {
-          setIsFilteredAction(false);
-          setSliderValueAction([0, sortMaxPrice(res.data)]);
-        }
-        setFoodListAction(res.data.sort(function (a, b) {
-          return a.price - b.price;
-        }))
-        setLoadedAction(true);
-      }
-    })
-  }
+  const handleClick = (subCat) => {
+    setSubCategoryAction(subCat);
+    setMaxPriceAction(
+      sortMaxPrice(foodList.filter((item) => item.subCategory === subCat))
+    );
+    if (isFiltered) {
+      setIsFilteredAction(false);
+      setSliderValueAction([
+        0,
+        sortMaxPrice(foodList.filter((item) => item.subCategory === subCat)),
+      ]);
+    }
+  };
 
   return (
     <>
-      {loaded && 
-      <div style={{width: "240px", height: "250px"}}><Tabs
-        orientation="vertical"
-        variant="scrollable"
-        value={tabValue}
-        onChange={handleTabChange}
-        aria-label="Vertical tabs example"
-      >
-        {
-          subCategoryList.map(item => <Tab onClick={() => handleClick(item)} key={item} label={item}></Tab>)
-        }
-      </Tabs></div>
-      }
-      {
-        !loaded && <div style={{display: "flex", justifyContent: "center", width:"240px", height: "250px"}}>
-        <CircularProgress style={{alignSelf: "center", width: "40px", height: "40px"}}/>
-      </div>
-      }
+      {loaded ? (
+        <div className={classes.root}>
+          <Tabs
+            orientation="vertical"
+            variant="scrollable"
+            value={tabValue}
+            onChange={handleTabChange}
+            aria-label="Vertical tabs example"
+          >
+            {subCategoryList.map((item) => (
+              <Tab
+                onClick={() => handleClick(item)}
+                key={item}
+                label={item}
+              ></Tab>
+            ))}
+          </Tabs>
+        </div>
+      ) : (
+        <div className={classes.loading}>
+          <CircularProgress />
+        </div>
+      )}
     </>
   );
 };
@@ -65,17 +102,16 @@ const mapDispatchToProps = {
   setMaxPriceAction: setMaxPriceAction,
   setIsFilteredAction: setIsFilteredAction,
   setSliderValueAction: setSliderValueAction,
-  setFoodListAction: setFoodListAction,
-  setLoadedAction: setLoadedAction
-}
+};
 
 const mapStateToProps = (state) => {
   return {
     tabValue: state.tabValue,
     subCategoryList: state.subCategoryList,
     isFiltered: state.isFiltered,
-    loaded: state.loaded
-  }
-}
+    loaded: state.loaded,
+    foodList: state.foodList,
+  };
+};
 
 export default connect(mapStateToProps, mapDispatchToProps)(TabBar);

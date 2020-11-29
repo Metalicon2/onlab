@@ -10,6 +10,7 @@ import store from "../redux/store";
 import { persistStore } from "redux-persist";
 import { PersistGate } from "redux-persist/integration/react";
 import "../public/styles/globalStyles.css";
+import { handleAuth } from "../utils/handleAuth";
 
 const useStyle = makeStyles(() => ({
   root: {
@@ -27,7 +28,7 @@ const useStyle = makeStyles(() => ({
 
 let persistor = persistStore(store);
 
-const App = ({ Component, pageProps }) => {
+const App = ({ Component, pageProps, isTokenValid }) => {
   return (
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>
@@ -52,7 +53,7 @@ const App = ({ Component, pageProps }) => {
         </Head>
         <CssBaseline />
         <Container maxWidth="lg" className={useStyle().root}>
-          <Header />
+          <Header isTokenValid={isTokenValid} />
           <div className={useStyle().componentStyle}>
             <Component {...pageProps} />
           </div>
@@ -69,7 +70,7 @@ App.getInitialProps = async ({ Component, ctx }) => {
     ? await Component.getInitialProps(ctx)
     : {};
 
-  return { pageProps: pageProps };
+  return { pageProps: pageProps, isTokenValid: await handleAuth(ctx) };
 };
 
 export default withRedux(makeStore)(App);

@@ -22,19 +22,20 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-const TabSelectors = () => {
+const TabSelectors = ({ user }) => {
   const classes = useStyles();
-  const [value, setValue] = useState(-1);
+  const [value, setValue] = useState(null);
   const { menu } = useRouter().query;
 
   useEffect(() => {
-    !menu ? setValue(null) : null;
+    !menu && setValue(null);
   }, [menu]);
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
 
+  //try shallow replace here
   const redirect = (route) => {
     Router.push("/menu/[menu]", `/menu/${route}`);
   };
@@ -43,7 +44,7 @@ const TabSelectors = () => {
     <div className={classes.root}>
       <Tabs
         value={value}
-        onChange={handleChange}
+        onChange={user.email && handleChange}
         aria-label="simple tabs example"
         centered
         TabIndicatorProps={{ className: classes.tabStyles }}

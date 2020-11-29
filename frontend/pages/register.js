@@ -17,7 +17,7 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
-    flexGrow: 1
+    flexGrow: 1,
   },
   avatar: {
     margin: theme.spacing(1),
@@ -34,39 +34,36 @@ const useStyles = makeStyles((theme) => ({
     cursor: "pointer",
   },
   copyright: {
-      margin: theme.spacing(5)
-  }
+    margin: theme.spacing(5),
+  },
 }));
 
 export default () => {
   const classes = useStyles();
-  const [email, setEmail] = useState("");
-  const [password1, setPassword1] = useState("");
-  const [password2, setPassword2] = useState("");
-  const [address, setAddress] = useState("");
-  const [phone, setPhone] = useState("");
+  const [registerData, setRegisterData] = useState({
+    email: "",
+    password: "",
+    passwordAgain: "",
+    address: "",
+    phone: "",
+  });
 
   const register = async () => {
-    if(!(password1 === password2)) {
+    const { password, passwordAgain } = registerData;
+    if (!(password === passwordAgain)) {
       return window.alert("Passwords didn't match!");
     }
-    const user = {
-      email: email,
-      password: password1,
-      address: address,
-      phone: phone
-    }
-    const res = await API.post("/user/register", user).catch(e => console.log(e));
-    if(res.data.status == 200){
+    const res = await API.post("/user/register", registerData);
+    if (res.data.status == 200) {
       router.push("/login");
       window.alert("Succesfull registration!");
-    }else{
-      window.alert("Something went wrong!")
+    } else {
+      window.alert("Something went wrong!");
     }
-  }
-  
+  };
+
   return (
-    <Container maxWidth="xs"   >
+    <Container maxWidth="xs">
       <CssBaseline />
       <div className={classes.paper}>
         <Avatar className={classes.avatar}>
@@ -75,65 +72,35 @@ export default () => {
         <Typography component="h1" variant="h5">
           Sign up
         </Typography>
-        <form className={classes.form} noValidate>
-          <TextField
-            variant="outlined"
-            margin="normal"
-            required
-            fullWidth
-            id="email"
-            label="Email Address"
-            name="email"
-            autoComplete="email"
-            autoFocus
-            onChange = {(e) => setEmail(e.target.value)}
-          />
-          <TextField
-            variant="outlined"
-            margin="normal"
-            required
-            fullWidth
-            name="password"
-            label="Password"
-            type="password"
-            id="password"
-            autoComplete="current-password"
-            onChange = {(e) => setPassword1(e.target.value)}
-          />
-          <TextField
-            variant="outlined"
-            margin="normal"
-            required
-            fullWidth
-            name="confirm_password"
-            label="Confirm Password"
-            type="password"
-            id="password1"
-            autoComplete="current-password"
-            onChange = {(e) => setPassword2(e.target.value)}
-          />
-          <TextField
-            variant="outlined"
-            margin="normal"
-            required
-            fullWidth
-            name="address"
-            label="Address"
-            type="text"
-            id="address"
-            onChange = {(e) => setAddress(e.target.value)}
-          />
-          <TextField
-            variant="outlined"
-            margin="normal"
-            required
-            fullWidth
-            name="phone"
-            label="Phone"
-            type="phone"
-            id="phone"
-            onChange = {(e) => setPhone(e.target.value)}
-          />
+        <form className={classes.form}>
+          {Object.keys(registerData).map((key) => (
+            <TextField
+              variant="outlined"
+              margin="normal"
+              required
+              fullWidth
+              id={key}
+              key={key}
+              label={(key.charAt(0).toUpperCase() + key.slice(1))
+                .replace(/([A-Z])/g, " $1")
+                .trim()}
+              name={key}
+              type={
+                key.includes("password")
+                  ? "password"
+                  : key.includes("email")
+                  ? "email"
+                  : "text"
+              }
+              autoComplete={key}
+              onChange={(e) =>
+                setRegisterData({
+                  ...registerData,
+                  [e.target.name]: e.target.value,
+                })
+              }
+            />
+          ))}
           <Button
             fullWidth
             variant="contained"
@@ -146,10 +113,15 @@ export default () => {
         </form>
       </div>
       <Box>
-        <Typography className={classes.copyright} variant="body2" color="textSecondary" align="center">
+        <Typography
+          className={classes.copyright}
+          variant="body2"
+          color="textSecondary"
+          align="center"
+        >
           Copyright © Foodster {new Date().getFullYear()}
         </Typography>
       </Box>
     </Container>
   );
-}
+};

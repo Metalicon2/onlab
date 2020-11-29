@@ -1,5 +1,5 @@
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import CardList from "../../components/Cards/CardList";
 import API from "../../utils/API";
 import { connect } from "react-redux";
@@ -14,6 +14,38 @@ import {
   setSliderValueAction,
   setLoadedAction,
 } from "../../redux/actions";
+import { Cookies } from "react-cookie";
+import { Container, Paper } from "@material-ui/core";
+import TabBar from "../../components/Filter/TabBar";
+import RangeSlider from "../../components/Filter/SliderBar";
+import SwitchBar from "../../components/Filter/SwitchBar";
+import SearchField from "../../components/Filter/SearchField";
+import { makeStyles } from "@material-ui/core/styles";
+
+const useStyle = makeStyles(() => ({
+  root: {
+    flex: 1,
+    height: "100%",
+    padding: "10px",
+    backgroundColor: "rgba(63,81,181, 0.9)",
+    "& > div": {
+      height: "100%",
+      padding: "10px 0",
+      "& > div:nth-child(2)": {
+        userSelect: "none",
+        "& > div:nth-child(1)": {
+          marginTop: "10px",
+          margin: "10px 10px 0 0",
+        },
+        "& > div:nth-child(3)": {
+          marginTop: "10px",
+        },
+      },
+    },
+  },
+}));
+
+const cookie = new Cookies();
 
 const Menu = ({
   user,
@@ -25,41 +57,50 @@ const Menu = ({
   setLoadedAction,
 }) => {
   const { menu } = useRouter().query;
+  const classes = useStyle();
 
-  const sortSubCategory = (tempData) => {
-    const subList = tempData.map((item) => item.subCategory);
-    const res = [...new Set(subList)];
-    return res;
-  };
-
-  const sortMaxPrice = (tempData) => {
-    const priceList = tempData.map((item) => item.price);
-    return Math.max(...priceList);
-  };
+  const sortMaxPrice = (tempData) =>
+    Math.max(...tempData.map((item) => item.price));
 
   useEffect(() => {
     setLoadedAction(false);
-    (async (menu) => {
-      const res = await API.get(`/food/main/${menu}`);
+    (async () => {
+      const res = await API.get(`/food/main/${menu}`, {
+        headers: {
+          Authorization: cookie.get("token", { path: "/" }) || null,
+        },
+      });
       if (res?.data[0]?.name) {
-        const temp = sortSubCategory(res.data);
-        setSubCategoryListAction(temp);
+        const tempSub = [...new Set(res.data.map((item) => item.subCategory))];
+        setSubCategoryListAction(tempSub);
         setMaxPriceAction(sortMaxPrice(res.data));
-        setSubCategoryAction(temp[0]);
+        setSubCategoryAction(tempSub[0]);
         setTabValueAction(0);
-        res.data = res.data.sort(function (a, b) {
-          return a.price - b.price;
-        });
+        res.data = res.data.sort((a, b) => a.price - b.price);
         setFoodListAction(
-          res.data.filter((item) => item.subCategory === temp[0])
+          res.data//.filter((item) => item.subCategory === tempSub[0])
         );
         setLoadedAction(true);
       }
-    })(menu);
+    })();
   }, [menu]);
 
   return (
     <>
+      <div className={classes.root}>
+        <Paper>
+          <TabBar />
+          <Container>
+            <div>
+              <RangeSlider />
+            </div>
+            <SearchField />
+            <div>
+              <SwitchBar />
+            </div>
+          </Container>
+        </Paper>
+      </div>
       <CardList />
     </>
   );

@@ -17,6 +17,7 @@ import API from "../utils/API";
 import router from "next/router";
 import { addUserAction } from "../redux/actions";
 import { connect } from "react-redux";
+import { Cookies } from "react-cookie";
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -45,24 +46,21 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
+const cookie = new Cookies();
+
 const Login = ({ addUserAction }) => {
   const classes = useStyles();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [loginData, setLoginData] = useState({
+    email: "",
+    password: "",
+  });
 
   const login = async () => {
-    console.log("logging in...");
-    const user = {
-      email: email,
-      password: password,
-    };
-    const res = await API.post("/user/login", user).catch((err) =>
-      console.log(err)
-    );
+    const res = await API.post("/user/login", loginData);
     if (res.data.status == 200) {
-      addUserAction({ email: user.email, id: res.data.payload });
-      router.push("/");
-      window.alert("logged in!");
+      addUserAction({ email: loginData.email, id: res.data.payload });
+      cookie.set("token", res.data.token, { path: "/"});
+      router.push(router.query.returnTo ? router.query.returnTo : "/");
     } else if (res.data.status == 400) {
       window.alert("Wrong password!");
     } else if (res.data.status == 402) {
@@ -82,31 +80,26 @@ const Login = ({ addUserAction }) => {
         <Typography component="h1" variant="h5">
           Sign in
         </Typography>
-        <form className={classes.form} noValidate>
-          <TextField
-            variant="outlined"
-            margin="normal"
-            required
-            fullWidth
-            id="email"
-            label="Email Address"
-            name="email"
-            autoComplete="email"
-            autoFocus
-            onChange={(e) => setEmail(e.target.value)}
-          />
-          <TextField
-            variant="outlined"
-            margin="normal"
-            required
-            fullWidth
-            name="password"
-            label="Password"
-            type="password"
-            id="password"
-            autoComplete="current-password"
-            onChange={(e) => setPassword(e.target.value)}
-          />
+        <form className={classes.form}>
+          {Object.keys(loginData).map((key) => (
+            <TextField
+              variant="outlined"
+              margin="normal"
+              required
+              key={key}
+              fullWidth
+              id={key}
+              label={(key.charAt(0).toUpperCase() + key.slice(1))
+                .replace(/([A-Z])/g, " $1")
+                .trim()}
+              name={key}
+              autoComplete={key}
+              type={key.includes("password") ? "password" : "email"}
+              onChange={(e) =>
+                setLoginData({ ...loginData, [e.target.id]: e.target.value })
+              }
+            />
+          ))}
           <FormControlLabel
             control={<Checkbox value="remember" color="primary" />}
             label="Remember me"
@@ -122,7 +115,7 @@ const Login = ({ addUserAction }) => {
           </Button>
           <Grid container>
             <Grid item xs>
-              <NextLink href="#">
+              <NextLink href="">
                 <Link color="inherit" className={classes.link} variant="body2">
                   Forgot password?
                 </Link>

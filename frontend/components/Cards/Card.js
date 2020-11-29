@@ -12,7 +12,7 @@ import styles from "./Card.module.css";
 import { connect } from "react-redux";
 import { addToCartAction } from "../../redux/actions";
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
   root: {
     width: "210px",
     height: "320px",
@@ -51,7 +51,7 @@ const CardItem = ({ name, desc, price, color, src, addToCartAction, id, cart}) =
 
   return (
     <div className={styles.grow}>
-      {console.log("render")}
+      {console.log("card render")}
       <CardHeader
         avatar={
           <Avatar aria-label="recipe" style={{ backgroundColor: color }}>
