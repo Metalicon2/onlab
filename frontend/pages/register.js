@@ -62,6 +62,8 @@ export default () => {
     }
   };
 
+  const onEnterPressed = (e) => e.keyCode == 13 && register();
+
   return (
     <Container maxWidth="xs">
       <CssBaseline />
@@ -99,6 +101,7 @@ export default () => {
                   [e.target.name]: e.target.value,
                 })
               }
+              onKeyDown={(e) => onEnterPressed(e)}
             />
           ))}
           <Button

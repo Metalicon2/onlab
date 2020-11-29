@@ -59,7 +59,7 @@ const Login = ({ addUserAction }) => {
     const res = await API.post("/user/login", loginData);
     if (res.data.status == 200) {
       addUserAction({ email: loginData.email, id: res.data.payload });
-      cookie.set("token", res.data.token, { path: "/"});
+      cookie.set("token", res.data.token, { path: "/" });
       router.push(router.query.returnTo ? router.query.returnTo : "/");
     } else if (res.data.status == 400) {
       window.alert("Wrong password!");
@@ -69,6 +69,8 @@ const Login = ({ addUserAction }) => {
       window.alert("No such user!");
     }
   };
+
+  const onEnterPressed = (e) => e.keyCode == 13 && login();
 
   return (
     <Container maxWidth="xs">
@@ -98,6 +100,7 @@ const Login = ({ addUserAction }) => {
               onChange={(e) =>
                 setLoginData({ ...loginData, [e.target.id]: e.target.value })
               }
+              onKeyDown={(e) => onEnterPressed(e)}
             />
           ))}
           <FormControlLabel
