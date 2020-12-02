@@ -9,7 +9,6 @@ import {
   setSliderValueAction,
 } from "../../redux/actions";
 import CircularProgress from "@material-ui/core/CircularProgress";
-import { Cookies } from "react-cookie";
 import { makeStyles } from "@material-ui/core/styles";
 
 const useStyle = makeStyles(() => ({
@@ -29,8 +28,6 @@ const useStyle = makeStyles(() => ({
     },
   },
 }));
-
-const cookie = new Cookies();
 
 const TabBar = ({
   loaded,
@@ -54,16 +51,14 @@ const TabBar = ({
     Math.max(...tempData.map((item) => item.price));
 
   const handleClick = (subCat) => {
-    setSubCategoryAction(subCat);
-    setMaxPriceAction(
-      sortMaxPrice(foodList.filter((item) => item.subCategory === subCat))
+    const listSortedBySubCat = foodList.filter(
+      (item) => item.subCategory === subCat
     );
+    setSubCategoryAction(subCat);
+    setMaxPriceAction(sortMaxPrice(listSortedBySubCat));
     if (isFiltered) {
       setIsFilteredAction(false);
-      setSliderValueAction([
-        0,
-        sortMaxPrice(foodList.filter((item) => item.subCategory === subCat)),
-      ]);
+      setSliderValueAction([0, sortMaxPrice(listSortedBySubCat)]);
     }
   };
 
@@ -109,7 +104,6 @@ const mapStateToProps = (state) => {
     tabValue: state.tabValue,
     subCategoryList: state.subCategoryList,
     isFiltered: state.isFiltered,
-    loaded: state.loaded,
     foodList: state.foodList,
   };
 };

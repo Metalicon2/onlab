@@ -18,6 +18,7 @@ import router from "next/router";
 import { addUserAction } from "../redux/actions";
 import { connect } from "react-redux";
 import { Cookies } from "react-cookie";
+import Notification from "../components/Notification";
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -54,19 +55,25 @@ const Login = ({ addUserAction }) => {
     email: "",
     password: "",
   });
+  const [notiProps, setNotiProps] = useState({
+    isOpen: false,
+    severity: null,
+    msg: null
+  });
 
   const login = async () => {
+    setNotiProps({isOpen: false});
     const res = await API.post("/user/login", loginData);
     if (res.data.status == 200) {
       addUserAction({ email: loginData.email, id: res.data.payload });
       cookie.set("token", res.data.token, { path: "/" });
       router.push(router.query.returnTo ? router.query.returnTo : "/");
     } else if (res.data.status == 400) {
-      window.alert("Wrong password!");
+      setNotiProps({isOpen: true, severity: "error", msg: "Wrong password!"});
     } else if (res.data.status == 402) {
-      window.alert("Empty fields!");
+      setNotiProps({isOpen: true, severity: "warning", msg: "Empty fields!"});
     } else {
-      window.alert("No such user!");
+      setNotiProps({isOpen: true, severity: "error", msg: "You don't have an account!"});
     }
   };
 
@@ -74,6 +81,7 @@ const Login = ({ addUserAction }) => {
 
   return (
     <Container maxWidth="xs">
+      <Notification {...notiProps} />
       <CssBaseline />
       <div className={classes.paper}>
         <Avatar className={classes.avatar}>

@@ -23,7 +23,10 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.BOOLEAN
         },
         src: {
-            type: DataTypes.STRING(100)
+            type: DataTypes.JSON
+        },
+        availableDate: {
+            type: DataTypes.STRING(20)
         }
     });
 

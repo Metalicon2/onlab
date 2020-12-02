@@ -1,22 +1,25 @@
 .grow {
-    width: 210px;
-    height: 320px;
-    margin: 10px;
-    transition: all 0.5s ease-in-out; 
-    animation: createBox 1s;
-    background-color: white;
-    border-radius: 5px;
+  width: 210px;
+  height: 320px;
+  margin: 10px;
+  transition: all 0.5s ease-in-out;
+  animation: createBox 1s;
+  background-color: white;
+  border-radius: 5px;
 }
 
-.grow:hover { transform: scale(1.03); border-radius: 25px;};
+.grow:hover {
+  transform: scale(1.03);
+  border-radius: 25px;
+}
 
 @keyframes createBox {
-    from {
-      opacity: 0.4;
-      transform: scale(0.95);
-    }
-    to {
-      opacity: 1;
-      transform: scale(1);
-    }
+  from {
+    opacity: 0.4;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }

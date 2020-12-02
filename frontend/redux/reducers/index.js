@@ -11,7 +11,6 @@ const userReducer = (state = {}, action) => {
 const cartReducer = (state = [], action) => {
     switch(action.type){
         case "ADD_TO_CART": return [...state, action.payload];
-        case "RESET_CART": return [];
         case "DELETE_FROM_CART": {
             const tempArray = [...state];
             const searchedIndex = tempArray.findIndex(element => element.name === action.payload.name);
@@ -98,9 +97,16 @@ const spicyReducer = (state = false, action) => {
     }
 }
 
-const loadedReducer = (state = false, action) => {
+const dayReducer = (state = "Monday", action) => {
     switch(action.type){
-        case "SET_LOADED": return action.payload;
+        case "SET_DAY": return action.payload;
+        default: return state;
+    }
+}
+
+const locationReducer = (state = "", action) => {
+    switch(action.type){
+        case "SET_LOCATION": return action.payload;
         default: return state;
     }
 }
@@ -118,5 +124,6 @@ export default combineReducers({
     sliderValue: sliderValueReducer,
     vegaChecked: vegaReducer,
     spicyChecked: spicyReducer,
-    loaded: loadedReducer
+    day: dayReducer,
+    location: locationReducer
 });

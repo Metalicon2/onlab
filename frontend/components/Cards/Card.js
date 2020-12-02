@@ -1,53 +1,59 @@
-import { makeStyles } from '@material-ui/core/styles';
-import CardHeader from '@material-ui/core/CardHeader';
-import CardMedia from '@material-ui/core/CardMedia';
-import CardContent from '@material-ui/core/CardContent';
-import CardActions from '@material-ui/core/CardActions';
-import Avatar from '@material-ui/core/Avatar';
-import IconButton from '@material-ui/core/IconButton';
-import Typography from '@material-ui/core/Typography';
-import { red } from '@material-ui/core/colors';
-import AddShoppingCartIcon from '@material-ui/icons/AddShoppingCart';
+import { makeStyles } from "@material-ui/core/styles";
+import CardHeader from "@material-ui/core/CardHeader";
+import CardMedia from "@material-ui/core/CardMedia";
+import CardContent from "@material-ui/core/CardContent";
+import CardActions from "@material-ui/core/CardActions";
+import Avatar from "@material-ui/core/Avatar";
+import IconButton from "@material-ui/core/IconButton";
+import Typography from "@material-ui/core/Typography";
+import { red } from "@material-ui/core/colors";
+import AddShoppingCartIcon from "@material-ui/icons/AddShoppingCart";
 import styles from "./Card.module.css";
 import { connect } from "react-redux";
 import { addToCartAction } from "../../redux/actions";
 
 const useStyles = makeStyles(() => ({
-  root: {
-    width: "210px",
-    height: "320px",
-    margin: 10,
-  },
   media: {
     height: 0,
-    paddingTop: '56.25%',
+    paddingTop: "56.25%",
   },
   expand: {
-    marginLeft: 'auto',
+    marginLeft: "auto",
   },
   expandOpen: {
-    transform: 'rotate(180deg)',
+    transform: "rotate(180deg)",
   },
   avatar: {
     backgroundColor: red[500],
   },
 }));
 
-const CardItem = ({ name, desc, price, color, src, addToCartAction, id, cart}) => {
-
+const CardItem = ({
+  name,
+  desc,
+  price,
+  color,
+  src,
+  addToCartAction,
+  id,
+  availableDate,
+  cart,
+  userId,
+}) => {
   const classes = useStyles();
 
   const addCart = (item) => {
-    const isContains = cart.findIndex(cartItem => cartItem.id === item.id);
-    if(isContains){
-    const res = window.confirm("Are you sure?");
-    if (res) {
-      addToCartAction(item);
+    const isContains =
+      cart.findIndex((cartItem) => cartItem.id === item.id) === -1;
+    if (isContains) {
+      const res = window.confirm("Are you sure?");
+      if (res) {
+        addToCartAction(item);
+      }
+    } else {
+      window.alert("Item already in the cart!");
     }
-  }else{
-    window.alert("Item already in the cart!");
-  }
-  }
+  };
 
   return (
     <div className={styles.grow}>
@@ -62,8 +68,8 @@ const CardItem = ({ name, desc, price, color, src, addToCartAction, id, cart}) =
       />
       <CardMedia
         className={classes.media}
-        image={src}
-        title="Paella dish"
+        image={src[0]}
+        title={name}
         maxwidth="30"
       />
       <CardContent>
@@ -75,23 +81,34 @@ const CardItem = ({ name, desc, price, color, src, addToCartAction, id, cart}) =
         <p style={{ marginLeft: "10px" }}>{price} Ft</p>
         <IconButton
           className={classes.expand}
-          onClick={() => addCart({ name: name, price: price, date: new Date(), quantity: 1, src: src, id: id })}
+          onClick={() =>
+            addCart({
+              name: name,
+              price: price,
+              date: new Date(),
+              quantity: 1,
+              src: src,
+              id: id,
+              availableDate: availableDate,
+              userId: userId,
+            })
+          }
         >
           <AddShoppingCartIcon />
         </IconButton>
       </CardActions>
     </div>
   );
-}
+};
 
 const mapDipatchToProps = {
-  addToCartAction: addToCartAction
-}
+  addToCartAction: addToCartAction,
+};
 
 const mapStateToProps = (state) => {
   return {
-    cart: state.cart
-  }
-}
+    cart: state.cart,
+  };
+};
 
 export default connect(mapStateToProps, mapDipatchToProps)(CardItem);

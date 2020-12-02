@@ -33,6 +33,12 @@ module.exports = (sequelize, DataTypes) => {
                 allowNull: false
             }
         });
+        User.hasMany(models.Menu, { 
+            foreignKey: {
+                name: "user_id",
+                allowNull: false
+            }
+        });
     }
 
     return User;

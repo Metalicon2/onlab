@@ -22,7 +22,7 @@ const useStyle = makeStyles(() => ({
     flex: 1,
     display: "flex",
     alignItems: "flex-start",
-    backgroundColor: "rgb(240,240,240)",
+    backgroundColor: "rgb(230,230,230)",
   },
 }));
 

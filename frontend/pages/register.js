@@ -10,6 +10,8 @@ import Container from "@material-ui/core/Container";
 import { useState } from "react";
 import API from "../utils/API";
 import router from "next/router";
+import { connect } from "react-redux";
+import Notification from "../components/Notification";
 
 const useStyles = makeStyles((theme) => ({
   paper: {
@@ -38,14 +40,19 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-export default () => {
+const Register = ({location}) => {
   const classes = useStyles();
   const [registerData, setRegisterData] = useState({
     email: "",
     password: "",
     passwordAgain: "",
-    address: "",
+    address: location || "",
     phone: "",
+  });
+  const [notiProps, setNotiProps] = useState({
+    isOpen: false,
+    severity: null,
+    msg: null
   });
 
   const register = async () => {
@@ -56,9 +63,8 @@ export default () => {
     const res = await API.post("/user/register", registerData);
     if (res.data.status == 200) {
       router.push("/login");
-      window.alert("Succesfull registration!");
     } else {
-      window.alert("Something went wrong!");
+      setNotiProps({isOpen: true, severity: "error", msg: "Failed to register!"});
     }
   };
 
@@ -66,6 +72,7 @@ export default () => {
 
   return (
     <Container maxWidth="xs">
+      <Notification {...notiProps} />
       <CssBaseline />
       <div className={classes.paper}>
         <Avatar className={classes.avatar}>
@@ -102,6 +109,7 @@ export default () => {
                 })
               }
               onKeyDown={(e) => onEnterPressed(e)}
+              value={registerData[key]}
             />
           ))}
           <Button
@@ -128,3 +136,11 @@ export default () => {
     </Container>
   );
 };
+
+const mapStateToProps = (state) => {
+  return {
+    location: state.location,
+  };
+};
+
+export default connect(mapStateToProps, null)(Register);

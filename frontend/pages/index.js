@@ -14,6 +14,9 @@ import EmojiPeopleIcon from "@material-ui/icons/EmojiPeople";
 import SentimentVeryDissatisfiedIcon from "@material-ui/icons/SentimentVeryDissatisfied";
 import DoneOutlineRoundedIcon from "@material-ui/icons/DoneOutlineRounded";
 import Autocomplete from "@material-ui/lab/Autocomplete";
+import { connect } from "react-redux";
+import { setLocationAction } from "../redux/actions";
+import Notification from "../components/Notification";
 
 //TODO: implement save location into redux
 
@@ -66,7 +69,7 @@ const useStyles = makeStyles(() => ({
     },
     "& .MuiOutlinedInput-root": {
       "& svg": {
-        color: "white"
+        color: "white",
       },
       "& fieldset": {
         borderColor: "white",
@@ -81,7 +84,7 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-const Home = ({ coords, isGeolocationEnabled }) => {
+const Home = ({ coords, isGeolocationEnabled, setLocationAction }) => {
   const classes = useStyles();
 
   const [locationVal, setLocationVal] = useState("");
@@ -92,10 +95,15 @@ const Home = ({ coords, isGeolocationEnabled }) => {
     zoom: 12,
     width: "100%",
     height: "100%",
-    pitch: 40 ,
+    pitch: 40,
   });
   const [optionsArr, setOptionsArr] = useState([]);
   const [timer, setTimer] = useState(null);
+  const [notiProps, setNotiProps] = useState({
+    isOpen: false,
+    severity: null,
+    msg: null
+  });
 
   useEffect(() => {
     if (isGeolocationEnabled) {
@@ -150,7 +158,7 @@ const Home = ({ coords, isGeolocationEnabled }) => {
         setCurrentLocation(null);
       }
     } else {
-      window.alert("Failed to find your address!");
+      setNotification(true);
     }
   };
 
@@ -177,6 +185,7 @@ const Home = ({ coords, isGeolocationEnabled }) => {
       });
     } else {
       setCurrentLocation(null);
+      setNotification(true);
     }
   };
 
@@ -185,6 +194,12 @@ const Home = ({ coords, isGeolocationEnabled }) => {
       fetchAddress();
     }
   };
+
+  const saveLocation = (description) => {
+    setNotiProps({isOpen: false});
+    setLocationAction(description);
+    setNotiProps({isOpen: true, severity: "success", msg: "Saved your location!"});
+  }
 
   const onChange = (value) => {
     setLocationVal(value);
@@ -210,6 +225,7 @@ const Home = ({ coords, isGeolocationEnabled }) => {
 
   return (
     <Container className={classes.container}>
+      <Notification {...notiProps} />
       <div
         className={classes.form}
         style={
@@ -228,7 +244,10 @@ const Home = ({ coords, isGeolocationEnabled }) => {
             </>
           ) : (
             <>
-              <h1>Sorry, we don't deliver to your location, or you didn't give us any information yet!</h1>
+              <h1>
+                Sorry, we don't deliver to your location, or you didn't give us
+                any information yet!
+              </h1>
               <SentimentVeryDissatisfiedIcon
                 style={{ fontSize: 50, color: "red" }}
               />
@@ -323,7 +342,9 @@ const Home = ({ coords, isGeolocationEnabled }) => {
                         variant="contained"
                         size="small"
                         //implement save to redux here
-                        onClick={() => window.alert("asd")}
+                        onClick={() =>
+                          saveLocation(currentLocation.description)
+                        }
                       >
                         Save location
                       </Button>
@@ -336,14 +357,36 @@ const Home = ({ coords, isGeolocationEnabled }) => {
           )
         </div>
       </div>
-      <Carousel />
+      <Carousel
+        images={[
+          "/static/images/pizza1.jpg",
+          "/static/images/slideTwo.webp",
+          "/static/images/slideThree.jpg",
+        ]}
+        isIndexPage
+      />
     </Container>
   );
 };
 
-export default geolocated({
-  positionOptions: {
-    enableHighAccuracy: true,
-  },
-  isOptimisticGeolocationEnabled: false,
-})(Home);
+const mapStateToProps = (state) => {
+  return {
+    location: state.location,
+  };
+};
+
+const mapDispatchToProps = {
+  setLocationAction: setLocationAction,
+};
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(
+  geolocated({
+    positionOptions: {
+      enableHighAccuracy: true,
+    },
+    isOptimisticGeolocationEnabled: false,
+  })(Home)
+);

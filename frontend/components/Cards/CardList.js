@@ -2,11 +2,14 @@ import Card from "./Card";
 import { CircularProgress } from "@material-ui/core";
 import { connect } from "react-redux";
 import { makeStyles } from "@material-ui/core/styles";
+import DaySelector from "./DaySelector";
 
 const useStyle = makeStyles(() => ({
   root: {
     flex: 4,
-    height: "805px",
+  },
+  cardListRoot: {
+    height: "808px",
     overflowY: "auto",
   },
   cardList: {
@@ -26,39 +29,61 @@ const useStyle = makeStyles(() => ({
       height: "80px",
     },
   },
+  daySelector: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    height: "65px",
+    background: "rgb(63,81,181)",
+  },
 }));
 
-const CardList = ({ loaded, foodList, filteredFoodList, isFiltered, subCategory }) => {
+const CardList = ({
+  loaded,
+  foodList,
+  filteredFoodList,
+  isFiltered,
+  subCategory,
+  day,
+  user
+}) => {
   const classes = useStyle();
 
   const getProperList = () =>
-    (isFiltered ? filteredFoodList : foodList).filter(
-      (item) => item.subCategory === subCategory
-    );
+    (isFiltered ? filteredFoodList : foodList)
+      .filter((item) => item.subCategory === subCategory)
+      .filter((item) => item.availableDate === day);
 
   return (
     <>
       <div className={classes.root}>
-        {loaded ? (
-          <div className={classes.cardList}>
-            {getProperList().map((item, index) => (
-              <Card
-                name={item.name}
-                desc={item.description}
-                price={item.price}
-                key={index}
-                key={index}
-                color={item.color}
-                src={item.src}
-                id={item.id}
-              />
-            ))}
-          </div>
-        ) : (
-          <div className={classes.loading}>
-            <CircularProgress />
-          </div>
-        )}
+        <div className={classes.cardListRoot}>
+          {loaded ? (
+            <div className={classes.cardList}>
+              {console.log(getProperList())}
+              {getProperList().map((item, index) => (
+                <Card
+                  name={item.name}
+                  desc={item.description}
+                  price={item.price}
+                  key={index}
+                  color={item.color}
+                  src={item.src}
+                  id={item.id}
+                  availableDate={item.availableDate}
+                  userId={user.id}
+                />
+              ))}
+            </div>
+          ) : (
+            <div className={classes.loading}>
+              <CircularProgress />
+            </div>
+          )}
+        </div>
+        <div className={classes.daySelector}>
+          <DaySelector />
+        </div>
       </div>
     </>
   );
@@ -69,8 +94,9 @@ const mapStateToProps = (state) => {
     foodList: state.foodList,
     filteredFoodList: state.filteredFoodList,
     isFiltered: state.isFiltered,
-    loaded: state.loaded,
-    subCategory: state.subCategory
+    subCategory: state.subCategory,
+    day: state.day,
+    user: state.user
   };
 };
 

@@ -1,8 +1,7 @@
 import { makeStyles } from "@material-ui/core/styles";
 import Tabs from "@material-ui/core/Tabs";
 import Tab from "@material-ui/core/Tab";
-import Router, { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import Router from "next/router";
 
 const useStyles = makeStyles(() => ({
   root: {
@@ -22,20 +21,9 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-const TabSelectors = ({ user }) => {
+const TabSelectors = () => {
   const classes = useStyles();
-  const [value, setValue] = useState(null);
-  const { menu } = useRouter().query;
 
-  useEffect(() => {
-    !menu && setValue(null);
-  }, [menu]);
-
-  const handleChange = (event, newValue) => {
-    setValue(newValue);
-  };
-
-  //try shallow replace here
   const redirect = (route) => {
     Router.push("/menu/[menu]", `/menu/${route}`);
   };
@@ -43,8 +31,6 @@ const TabSelectors = ({ user }) => {
   return (
     <div className={classes.root}>
       <Tabs
-        value={value}
-        onChange={user.email && handleChange}
         aria-label="simple tabs example"
         centered
         TabIndicatorProps={{ className: classes.tabStyles }}

@@ -2,12 +2,11 @@ import { FormControlLabel, Switch } from "@material-ui/core";
 import { connect } from "react-redux";
 import { setCheckedVegaAction, setCheckedSpicyAction, setIsFilteredAction, setFilteredFoodListAction } from "../../redux/actions";
 
-const SwitchBar = ({ vegaChecked, spicyChecked, foodList, lowToHigh, setCheckedVegaAction, setCheckedSpicyAction, setIsFilteredAction, setFilteredFoodListAction, }) => {
+const SwitchBar = ({ vegaChecked, spicyChecked, foodList, setCheckedVegaAction, setCheckedSpicyAction, setIsFilteredAction, setFilteredFoodListAction, }) => {
 
   const handleSwitch = (switchName) => {
     let tempVega = vegaChecked;
     let tempSpicy = spicyChecked;
-    let tempLH = lowToHigh;
     if (switchName === "vega") {
       tempVega = !vegaChecked;
       setCheckedVegaAction(tempVega);

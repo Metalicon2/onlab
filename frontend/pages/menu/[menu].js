@@ -1,26 +1,24 @@
 import { useRouter } from "next/router";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import CardList from "../../components/Cards/CardList";
 import API from "../../utils/API";
 import { connect } from "react-redux";
 import {
   setMaxPriceAction,
   setFoodListAction,
-  setFilteredFoodListAction,
   setIsFilteredAction,
   setSubCategoryAction,
   setTabValueAction,
   setSubCategoryListAction,
   setSliderValueAction,
-  setLoadedAction,
 } from "../../redux/actions";
-import { Cookies } from "react-cookie";
 import { Container, Paper } from "@material-ui/core";
 import TabBar from "../../components/Filter/TabBar";
 import RangeSlider from "../../components/Filter/SliderBar";
 import SwitchBar from "../../components/Filter/SwitchBar";
 import SearchField from "../../components/Filter/SearchField";
 import { makeStyles } from "@material-ui/core/styles";
+import { Cookies } from "react-cookie";
 
 const useStyle = makeStyles(() => ({
   root: {
@@ -48,39 +46,42 @@ const useStyle = makeStyles(() => ({
 const cookie = new Cookies();
 
 const Menu = ({
-  user,
+  isFiltered,
+  setSliderValueAction,
   setMaxPriceAction,
   setFoodListAction,
   setSubCategoryAction,
   setTabValueAction,
   setSubCategoryListAction,
-  setLoadedAction,
 }) => {
   const { menu } = useRouter().query;
   const classes = useStyle();
+  const [loaded, setLoaded] = useState(false);
 
   const sortMaxPrice = (tempData) =>
     Math.max(...tempData.map((item) => item.price));
 
   useEffect(() => {
-    setLoadedAction(false);
+    setLoaded(false);
     (async () => {
       const res = await API.get(`/food/main/${menu}`, {
         headers: {
-          Authorization: cookie.get("token", { path: "/" }) || null,
+          Authorization: cookie.get("token", { path: "/" }),
         },
       });
       if (res?.data[0]?.name) {
+        if (isFiltered) {
+          setIsFilteredAction(false);
+          setSliderValueAction([0, sortMaxPrice(res.data)]);
+        }
         const tempSub = [...new Set(res.data.map((item) => item.subCategory))];
         setSubCategoryListAction(tempSub);
         setMaxPriceAction(sortMaxPrice(res.data));
         setSubCategoryAction(tempSub[0]);
         setTabValueAction(0);
         res.data = res.data.sort((a, b) => a.price - b.price);
-        setFoodListAction(
-          res.data//.filter((item) => item.subCategory === tempSub[0])
-        );
-        setLoadedAction(true);
+        setFoodListAction(res.data);
+        setLoaded(true);
       }
     })();
   }, [menu]);
@@ -89,7 +90,7 @@ const Menu = ({
     <>
       <div className={classes.root}>
         <Paper>
-          <TabBar />
+          <TabBar loaded={loaded} />
           <Container>
             <div>
               <RangeSlider />
@@ -101,32 +102,25 @@ const Menu = ({
           </Container>
         </Paper>
       </div>
-      <CardList />
+      <CardList loaded={loaded} />
     </>
   );
 };
 
 const mapStateToProps = (state) => {
   return {
-    maxPrice: state.maxPrice,
-    foodList: state.foodList,
-    filteredFoodList: state.filteredFoodList,
     isFiltered: state.isFiltered,
-    subCategory: state.subCategory,
-    user: state.user,
   };
 };
 
 const mapDispatchToProps = {
   setMaxPriceAction: setMaxPriceAction,
   setFoodListAction: setFoodListAction,
-  setFilteredFoodListAction: setFilteredFoodListAction,
   setIsFilteredAction: setIsFilteredAction,
   setSubCategoryAction: setSubCategoryAction,
   setTabValueAction: setTabValueAction,
   setSubCategoryListAction: setSubCategoryListAction,
   setSliderValueAction: setSliderValueAction,
-  setLoadedAction,
 };
 
 export default connect(mapStateToProps, mapDispatchToProps)(Menu);

@@ -11,9 +11,9 @@ export const handleAuth = async (ctx) => {
   //get token
   if (req) {
     token = req.headers.cookie?.split("token=").pop();
-    console.log("read serverToken");
+    //console.log("read serverToken");
   } else {
-    console.log("read clientToken");
+    //console.log("read clientToken");
     token = cookie.get("token");
   }
 
@@ -48,7 +48,7 @@ export const handleAuth = async (ctx) => {
     }
   }
 
-  console.log("handleAuth called (menu or profile)");
+  //console.log("handleAuth called (menu or profile)");
 
   //here we delete the token if it's expired server or client side
   //then we redirect to login storing the last route
@@ -68,6 +68,7 @@ export const handleAuth = async (ctx) => {
         .end();
     } else {
       console.log(asPath);
+      console.log(pathname);
       console.log("Removing client side token");
       cookie.remove("token", { path: "/" });
       Router.push(`/login?returnTo=${asPath}`);
@@ -75,6 +76,6 @@ export const handleAuth = async (ctx) => {
     return false;
   }
 
-  console.log("valid Token");
+  //console.log("valid Token");
   return true;
 };

@@ -8,7 +8,7 @@ import TabSelector from "../Layouts/TabSelector";
 import ExitToAppIcon from "@material-ui/icons/ExitToApp";
 import AccountCircleIcon from "@material-ui/icons/AccountCircle";
 import { useRouter } from "next/router";
-import { deleteUserAction, resetCartAction, setFoodListAction } from "../../redux/actions";
+import { deleteUserAction, setFoodListAction, setLocationAction } from "../../redux/actions";
 import { connect } from "react-redux";
 import { Cookies } from "react-cookie";
 import { useEffect } from "react";
@@ -28,22 +28,23 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-const Header = ({ deleteUserAction, user, resetCartAction, isTokenValid, setFoodListAction }) => {
+const Header = ({ deleteUserAction, user, isTokenValid, setFoodListAction, setLocationAction }) => {
   const classes = useStyles();
   const router = useRouter();
 
-  const path = router.pathname;
+  const {asPath} = router;
 
   const logout = () => {
     cookie.remove("token", { path: "/" });
     deleteUserAction();
-    resetCartAction();
+    setLocationAction("");
     setFoodListAction([]);
   };
 
   useEffect(() => {
     if (!isTokenValid) {
       deleteUserAction();
+      setLocationAction("");
       setFoodListAction([]);
     }
   }, [isTokenValid]);
@@ -58,7 +59,7 @@ const Header = ({ deleteUserAction, user, resetCartAction, isTokenValid, setFood
           </Typography>
         </Link>
         <TabSelector user={user} />
-        <Link href="/cart">
+        <Link href="/newcart">
           <IconButton color="inherit">
             <ShoppingCartIcon />
           </IconButton>
@@ -71,12 +72,12 @@ const Header = ({ deleteUserAction, user, resetCartAction, isTokenValid, setFood
           </Link>
         ) : (
           <>
-            <Link href={path}>
+            <Link href={asPath}>
               <IconButton color="inherit">
                 <AccountCircleIcon />
               </IconButton>
             </Link>
-            <Link href={path}>
+            <Link href={asPath}>
               <IconButton onClick={() => logout()} color="inherit">
                 <ExitToAppIcon />
               </IconButton>
@@ -90,8 +91,8 @@ const Header = ({ deleteUserAction, user, resetCartAction, isTokenValid, setFood
 
 const mapDispatchToProps = {
   deleteUserAction: deleteUserAction,
-  resetCartAction: resetCartAction,
-  setFoodListAction: setFoodListAction
+  setFoodListAction: setFoodListAction,
+  setLocationAction: setLocationAction,
 };
 
 const mapStateToProps = (state) => {

@@ -39,7 +39,7 @@ router.post("/user/login", async (ctx) => {
             const isCorrectPW = await bcrypt.compare(ctx.request.body.password, res.password_hash);
             if(isCorrectPW){
                 //here generate jwt token
-                const newToken = jwt.sign(res.dataValues, process.env.JWT_SECRET, {expiresIn: 30});
+                const newToken = jwt.sign(res.dataValues, process.env.JWT_SECRET, {expiresIn: 3000});
                 ctx.response.body = {
                     msg: "login success",
                     status: 200,
